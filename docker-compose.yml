@@ -5,3 +5,10 @@ services:
       - "3000:3000"
     env_file:
       - .env
+    environment:
+      - DB_PATH=/app/data/app.db
+    volumes:
+      - app-data:/app/data
+
+volumes:
+  app-data:

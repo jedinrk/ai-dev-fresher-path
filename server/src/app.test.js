@@ -1,6 +1,11 @@
-import { describe, it, expect } from 'vitest';
+import { beforeEach, describe, it, expect } from 'vitest';
 import request from 'supertest';
 import { createApp } from './app.js';
+import { resetTestEnv } from './testUtils.js';
+
+beforeEach(() => {
+  resetTestEnv();
+});
 
 describe('GET /api/health', () => {
   it('returns ok status', async () => {

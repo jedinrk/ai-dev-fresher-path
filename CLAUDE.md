@@ -11,7 +11,7 @@ The learning design matters as much as the code. Lessons are short and hands-on.
 - Frontend: React with Vite, in `client/`
 - Backend: Node.js with Express, in `server/`
 - Database: SQLite via `better-sqlite3`, stored in a Docker volume
-- Auth: Google Identity Services on the client. The server verifies the ID token with `google-auth-library` and sets a signed, httpOnly session cookie.
+- Auth: custom email/password. One-time self-registration for allowlisted emails only (`server/src/routes/auth.js`); passwords hashed with Node's built-in `crypto.scrypt` (no extra dependency). The server sets a signed, httpOnly session cookie and re-checks the allowlist on every protected request.
 - Content: lesson and checkpoint data in `content/`
 - Deployment: Docker on a DigitalOcean droplet, deployed with `doctl`
 
@@ -22,6 +22,7 @@ The learning design matters as much as the code. Lessons are short and hands-on.
 - Tests: `npm test` (both workspaces), or `npm run test:client` / `npm run test:server`
 - Build: `npm run build` (builds the client; the server serves `client/dist` when `NODE_ENV=production`)
 - Docker build and run: `docker compose up --build`
+- Admin (reset a user so they can re-register, or list registered users): `npm run admin --workspace server -- list` / `npm run admin --workspace server -- reset-user <email>`
 
 Use the Node version in `.nvmrc` (current LTS). Run `nvm use` before the above commands if your shell doesn't pick it up automatically.
 
@@ -36,7 +37,7 @@ Use the Node version in `.nvmrc` (current LTS). Run `nvm use` before the above c
 ## Security rules (never break these)
 
 - Never disable or bypass the email allowlist, including for testing. Test with a dedicated test user instead.
-- Never trust client-supplied identity. Verify the Google token on the server for every protected route.
+- Never trust client-supplied identity. Every protected route re-reads the signed session cookie and re-checks the allowlist server-side; never rely on the client's claimed email/role.
 - Never commit secrets, including `.env` files, tokens, client secrets, or session keys. Use `.env.example` for variable names only.
 - Never log tokens, emails, or progress data at a level that would leak them.
 - Do not deploy, change firewall rules, or modify DigitalOcean resources without explicit approval from the user in this session.

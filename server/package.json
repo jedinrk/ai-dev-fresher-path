@@ -6,9 +6,12 @@
   "scripts": {
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
-    "test": "vitest run"
+    "test": "vitest run",
+    "admin": "node scripts/admin.js"
   },
   "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "cookie-parser": "^1.4.7",
     "express": "^4.21.2"
   },
   "devDependencies": {
