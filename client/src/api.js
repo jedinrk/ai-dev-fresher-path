@@ -26,4 +26,21 @@ export const api = {
   resetUser: (email) =>
     request(`/api/admin/users/${encodeURIComponent(email)}`, { method: 'DELETE' }),
   listConcepts: () => request('/api/content/concepts'),
+  getProgress: () => request('/api/progress'),
+  submitPrediction: (conceptId, text) =>
+    request(`/api/progress/${encodeURIComponent(conceptId)}/prediction`, {
+      method: 'POST',
+      body: JSON.stringify({ text }),
+    }),
+  advanceStep: (conceptId, step) =>
+    request(`/api/progress/${encodeURIComponent(conceptId)}/step`, {
+      method: 'POST',
+      body: JSON.stringify({ step }),
+    }),
+  listCheckpoints: () => request('/api/admin/checkpoints'),
+  signOffCheckpoint: (email, week, notes) =>
+    request(`/api/admin/checkpoints/${encodeURIComponent(email)}/${week}`, {
+      method: 'POST',
+      body: JSON.stringify({ notes }),
+    }),
 };

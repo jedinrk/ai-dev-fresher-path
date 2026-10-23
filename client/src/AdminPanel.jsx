@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from './api'
+import CheckpointPanel from './CheckpointPanel'
 
 function AdminPanel({ currentUserEmail }) {
   const [users, setUsers] = useState([])
@@ -58,6 +59,8 @@ function AdminPanel({ currentUserEmail }) {
           ))}
         </tbody>
       </table>
+
+      <CheckpointPanel />
     </section>
   )
 }

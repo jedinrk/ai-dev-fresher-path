@@ -20,7 +20,35 @@ export function getDb() {
       password_hash TEXT NOT NULL,
       role TEXT NOT NULL CHECK (role IN ('mentor', 'intern')),
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    )
+    );
+
+    CREATE TABLE IF NOT EXISTS predictions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_email TEXT NOT NULL,
+      concept_id TEXT NOT NULL,
+      text TEXT NOT NULL,
+      wrong_flag INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE (user_email, concept_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS progress (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_email TEXT NOT NULL,
+      concept_id TEXT NOT NULL,
+      step TEXT NOT NULL CHECK (step IN ('predict', 'learn', 'prove', 'done')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE (user_email, concept_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS checkpoints (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_email TEXT NOT NULL,
+      week INTEGER NOT NULL,
+      mentor_notes TEXT,
+      signed_off_at TEXT,
+      UNIQUE (user_email, week)
+    );
   `);
 
   return db;

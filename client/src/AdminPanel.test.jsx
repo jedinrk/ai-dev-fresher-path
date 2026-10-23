@@ -1,12 +1,21 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import AdminPanel from './AdminPanel'
 import { api } from './api'
 
 vi.mock('./api', () => ({
-  api: { listUsers: vi.fn(), resetUser: vi.fn() },
+  api: {
+    listUsers: vi.fn(),
+    resetUser: vi.fn(),
+    listCheckpoints: vi.fn(),
+    signOffCheckpoint: vi.fn(),
+  },
 }))
+
+beforeEach(() => {
+  api.listCheckpoints.mockResolvedValue([])
+})
 
 afterEach(() => {
   vi.clearAllMocks()

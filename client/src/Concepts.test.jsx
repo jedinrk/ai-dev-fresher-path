@@ -5,7 +5,12 @@ import Concepts from './Concepts'
 import { api } from './api'
 
 vi.mock('./api', () => ({
-  api: { listConcepts: vi.fn() },
+  api: {
+    listConcepts: vi.fn(),
+    getProgress: vi.fn(),
+    submitPrediction: vi.fn(),
+    advanceStep: vi.fn(),
+  },
 }))
 
 afterEach(() => {
@@ -32,6 +37,7 @@ const sampleConcepts = [
 describe('Concepts', () => {
   it('lists concepts and opens one on click', async () => {
     api.listConcepts.mockResolvedValue(sampleConcepts)
+    api.getProgress.mockResolvedValue({ predictions: {}, steps: {} })
 
     render(<Concepts />)
 
@@ -42,8 +48,19 @@ describe('Concepts', () => {
     expect(screen.getByText('Guess?')).toBeInTheDocument()
   })
 
+  it('shows a checkmark for a concept already marked done', async () => {
+    api.listConcepts.mockResolvedValue(sampleConcepts)
+    api.getProgress.mockResolvedValue({ predictions: { F1: 'Guess.' }, steps: { F1: 'done' } })
+
+    render(<Concepts />)
+
+    await waitFor(() => expect(screen.getByText(/✓ F1: What software is/i)).toBeInTheDocument())
+    expect(screen.getByText(/F2: Frontend, backend, database/i)).toBeInTheDocument()
+  })
+
   it('shows an error if concepts fail to load', async () => {
     api.listConcepts.mockRejectedValue(new Error('not authenticated'))
+    api.getProgress.mockResolvedValue({ predictions: {}, steps: {} })
 
     render(<Concepts />)
 
