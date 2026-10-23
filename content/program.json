@@ -1,0 +1,584 @@
+{
+  "version": "first-build-v1",
+  "name": "First Build",
+  "tagline": "Four weeks. Your first real contribution.",
+  "weeks": [
+    {
+      "number": 1,
+      "title": "Find your footing",
+      "label": "Foundations",
+      "description": "Meet your tools, make your first changes, and build a small app that works.",
+      "outcome": "Your first working app",
+      "milestone": "First app built",
+      "ids": ["F1", "S1", "F8", "F2", "F5"],
+      "projectTitle": "A little app. A real beginning.",
+      "brief": "Build a To-Do app that lets someone add, complete, and remove a task. Work in your own editor with Cline, then inspect and test what you build.",
+      "deliverables": [
+        "A working To-Do app with useful empty-input feedback",
+        "A meaningful automated test",
+        "A repository and a short demo",
+        "An explanation of where tasks live and what happens on refresh"
+      ]
+    },
+    {
+      "number": 2,
+      "title": "Make your first contribution",
+      "label": "Implementation",
+      "description": "Find your way around a real codebase and deliver one useful change.",
+      "outcome": "A feature ready for review",
+      "milestone": "First contribution ready",
+      "ids": ["P1", "F6", "F3", "P2", "F4"],
+      "projectTitle": "A small change with a real purpose.",
+      "brief": "Your mentor will help you choose a team project and a scoped task. Agree on the user problem and acceptance criteria, run the project, and prepare your first contribution for review.",
+      "deliverables": [
+        "A mentor-agreed brief and acceptance criteria",
+        "A working feature or fix on a task branch",
+        "A relevant test and verification notes",
+        "A review handoff or draft pull request"
+      ]
+    },
+    {
+      "number": 3,
+      "title": "Make it better, together",
+      "label": "Improvement",
+      "description": "Turn feedback into clearer code and a better experience for the people using it.",
+      "outcome": "Reviewed, improved work",
+      "milestone": "Feedback put into practice",
+      "ids": ["R1", "R2", "R3", "R4", "F7"],
+      "projectTitle": "Good work gets better with feedback.",
+      "brief": "Act on your mentor's review, improve one user interaction, and take on a second task. Keep each change focused and make its verification easy for a teammate to follow.",
+      "deliverables": [
+        "Review feedback addressed or discussed",
+        "A focused refactor and usability improvement",
+        "A second scoped contribution",
+        "Submitted PRs with their checks explained"
+      ]
+    },
+    {
+      "number": 4,
+      "title": "Finish and tell your story",
+      "label": "Handover & demo",
+      "description": "Leave useful work behind. Show what you built, how it works, and what you learned.",
+      "outcome": "Your project, demonstrated",
+      "milestone": "First build completed",
+      "ids": ["D1", "D2", "D3", "D4", "D5"],
+      "projectTitle": "Leave something the team can build on.",
+      "brief": "Close remaining review items, document your work, and prepare a 5–10 minute demo. Be clear about pending merges or limitations. Explain one interaction in your own words.",
+      "deliverables": [
+        "Accurate status of all open contributions",
+        "A tested handover document",
+        "A 5–10 minute demo delivered to the team",
+        "A reflection and one concrete next learning goal"
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "vscode",
+      "title": "Get comfortable in VS Code",
+      "source": "Visual Studio Code",
+      "track": "Development",
+      "weeks": [1],
+      "format": "Guide",
+      "url": "https://code.visualstudio.com/docs/getstarted/overview",
+      "description": "Find the editor, file explorer, and integrated terminal.",
+      "takeaway": "Open a folder and locate the terminal.",
+      "required": true
+    },
+    {
+      "id": "node",
+      "title": "Install Node.js",
+      "source": "Node.js",
+      "track": "Development",
+      "weeks": [1, 2],
+      "format": "Setup",
+      "url": "https://nodejs.org/en/download",
+      "description": "Choose the installer for your OS and your project's required version.",
+      "takeaway": "Confirm node --version and npm --version work.",
+      "required": true
+    },
+    {
+      "id": "git",
+      "title": "Your first GitHub workflow",
+      "source": "GitHub Docs",
+      "track": "Development",
+      "weeks": [1, 2, 3, 4],
+      "format": "Tutorial",
+      "url": "https://docs.github.com/en/get-started/using-github/hello-world",
+      "description": "Follow a repository from a branch through a pull request.",
+      "takeaway": "Explain the difference between a commit, a push, and a PR.",
+      "required": true
+    },
+    {
+      "id": "cline",
+      "title": "Set up your AI coding partner",
+      "source": "Cline Docs",
+      "track": "Generative AI",
+      "weeks": [1, 2],
+      "format": "Setup",
+      "url": "https://docs.cline.bot/getting-started/installing-cline",
+      "description": "Use the IDE extension path for this program and your mentor's approved provider.",
+      "takeaway": "Open Cline in VS Code and ask it to explain a practice file.",
+      "required": true
+    },
+    {
+      "id": "ai",
+      "title": "Understand generative AI",
+      "source": "Microsoft",
+      "track": "Generative AI",
+      "weeks": [1, 2],
+      "format": "Course",
+      "url": "https://microsoft.github.io/generative-ai-for-beginners/",
+      "description": "Explore the introductory LLM and prompt-engineering lessons.",
+      "takeaway": "Name one useful capability and one limitation of an AI assistant.",
+      "required": false
+    },
+    {
+      "id": "web",
+      "title": "How the web fits together",
+      "source": "MDN Web Docs",
+      "track": "Development",
+      "weeks": [1, 2, 3],
+      "format": "Guide",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development",
+      "description": "Use the getting-started and core modules alongside your project.",
+      "takeaway": "Point to the HTML, CSS, and JavaScript behind one interaction.",
+      "required": false
+    },
+    {
+      "id": "react",
+      "title": "React, one component at a time",
+      "source": "React",
+      "track": "Development",
+      "weeks": [2, 3],
+      "format": "Tutorial",
+      "url": "https://react.dev/learn",
+      "description": "Read the Quick Start if your assigned project uses React.",
+      "takeaway": "Find a component and explain how an event changes its state.",
+      "required": false
+    },
+    {
+      "id": "docs",
+      "title": "Write a handover people can use",
+      "source": "Write the Docs",
+      "track": "Development",
+      "weeks": [4],
+      "format": "Guide",
+      "url": "https://www.writethedocs.org/guide/writing/beginners-guide-to-docs/",
+      "description": "Think about your reader and the questions your documentation should answer.",
+      "takeaway": "Have a teammate follow one of your setup instructions.",
+      "required": true
+    }
+  ],
+  "glossary": [
+    ["Terminal", "A text interface for running commands in a chosen folder."],
+    ["Repository", "A project's files and their recorded version history."],
+    ["Dependency", "A package of code that your project uses."],
+    ["Frontend", "The interface and behavior running in the user's browser."],
+    ["Backend", "The server-side code that handles requests and rules."],
+    ["API", "An agreed way for programs to request information or actions."],
+    ["Commit", "A recorded snapshot of changes in Git."],
+    ["Branch", "A separate line of development in a repository."],
+    [
+      "Pull request",
+      "A proposal to review and merge changes into another branch."
+    ],
+    ["Test", "An automated check of a specific expected behavior."],
+    [
+      "Deployment",
+      "Making a version of an application available in a target environment."
+    ],
+    ["Prompt", "The instructions and context you give an AI model."]
+  ],
+  "lessons": [
+    {
+      "id": "F1",
+      "title": "Meet your workspace",
+      "time": 20,
+      "kind": "Explore",
+      "summary": "Find your way around files, folders, and the terminal.",
+      "predictPrompt": "How is a code editor different from the terminal? Why might a developer type a command instead of double-clicking?",
+      "lesson": "Software starts as files containing instructions. Your editor helps you read and change those files. The terminal lets you ask tools to do things: start a server, run tests, or list a folder.\n\nA command runs in a current folder. Before running one, check where you are. On macOS or Linux, use pwd and ls; in Windows PowerShell, use Get-Location and Get-ChildItem. You do not need to memorise every command. Learn what a command will do before you run it.",
+      "proveTask": "Open a practice folder in VS Code. Open its integrated terminal, check your current location, and list the files. Create a notes.txt file in the editor and find it in the terminal output.",
+      "checklist": [
+        "I opened a folder in the editor.",
+        "I found that same folder in the terminal.",
+        "I can explain what my command did."
+      ],
+      "hint": "Use Terminal → New Terminal in VS Code. Compare the folder name in the editor with the location printed by your terminal.",
+      "resources": ["vscode"],
+      "reflection": "What can you now do in the terminal that felt unfamiliar before?"
+    },
+    {
+      "id": "S1",
+      "concept": "Set up your development tools",
+      "title": "Get your tools ready",
+      "time": 35,
+      "kind": "Setup",
+      "summary": "Set up VS Code, Node.js, Git, and your AI assistant.",
+      "predictPrompt": "If VS Code is installed, what else might you need to run JavaScript and share code with your team?",
+      "lesson": "Each tool has a different job. VS Code is your editor. Node.js runs JavaScript outside the browser, and npm manages packages. Git records changes locally; GitHub hosts shared repositories. Cline works inside your editor to help investigate and change code.\n\nFollow the official installation links for your operating system. Use your project's required Node version; for a new practice project, choose the current LTS release. Install Git separately from creating a GitHub account. In VS Code Extensions, install Cline and use the provider and credentials your mentor supplies. Never paste keys into a repository or question log.",
+      "proveTask": "Install the tools, then run the version checks below in a new terminal. Sign in to GitHub and confirm Cline can respond in your practice folder. If access is missing, ask your mentor instead of buying credits.",
+      "code": "node --version\nnpm --version\ngit --version",
+      "checklist": [
+        "VS Code opens my practice folder.",
+        "Node, npm, and Git return version numbers.",
+        "I can access GitHub.",
+        "Cline responds using mentor-provided access."
+      ],
+      "hint": "If a command is not found after installation, restart the terminal. Check the official instructions for your operating system before changing your PATH.",
+      "resources": ["vscode", "node", "git", "cline"],
+      "reflection": "Which tool runs code, which records changes, and which helps you reason about a task?"
+    },
+    {
+      "id": "F8",
+      "title": "Give your AI partner a clear brief",
+      "time": 25,
+      "kind": "Practice",
+      "summary": "Use Cline thoughtfully: give context, review a plan, check the result.",
+      "predictPrompt": "You ask an AI assistant to 'make my app better'. What could it change that you did not intend?",
+      "lesson": "An AI coding assistant can explain files, propose changes, and help run checks. Its suggestions can also be wrong. Give it a goal, the current behavior, constraints, and a way to check success.\n\nIn Cline, use Plan mode to explore an approach before moving to Act mode for implementation. Read the plan and clarify assumptions. Review requested tool actions and the resulting diff. Your job is to decide whether the change solves the actual problem. A confident explanation is not proof that code works.",
+      "prompt": "I am learning with a small To-Do app. Help me plan a change that rejects blank or whitespace-only task titles and shows a clear message. Keep valid task creation working. Inspect the relevant files, explain your plan and test, and wait for my review before editing.",
+      "proveTask": "Use Cline in your practice folder to plan one small change. Ask one clarification or reject an unnecessary step. Once you approve the approach, inspect the implementation and try both a normal input and an edge case.",
+      "checklist": [
+        "I described one specific goal.",
+        "I reviewed the plan before implementation.",
+        "I inspected the changed code and checked its behavior."
+      ],
+      "hint": "If your app is not built yet, ask for a plan for a tiny hello-world page. Keep the practice task small enough to explain.",
+      "resources": ["cline", "ai"],
+      "reflection": "Which detail in your request gave you more control over the result?"
+    },
+    {
+      "id": "F2",
+      "title": "Build your first To-Do flow",
+      "time": 60,
+      "kind": "Build",
+      "summary": "Connect an interface, its behavior, and the place where data lives.",
+      "predictPrompt": "When someone adds a task, where do you think the task goes? Will it still be there after a refresh?",
+      "lesson": "The frontend is the interface in the browser. HTML defines its structure, CSS its appearance, and JavaScript its behavior. A backend handles requests and rules outside the browser. A database can keep information between sessions.\n\nStart your To-Do app with a small JavaScript array in memory. A variable holds a value, an array holds a list, and a function groups instructions. A click handler can add an item to the list and redraw it. Memory-only tasks disappear when the page refreshes; persistence is a separate feature. Ask Cline to explain these parts as you build.",
+      "proveTask": "Build a small To-Do app with Node.js and basic HTML, CSS, and JavaScript. Let someone add, complete, and remove tasks. Reject blank titles. Keep storage simple and explain what happens to tasks on refresh.",
+      "checklist": [
+        "I can add a non-empty task.",
+        "I can complete and remove a task.",
+        "Blank input produces a useful message.",
+        "I can explain where task data lives."
+      ],
+      "hint": "Build Add first. Then add Complete and Remove one at a time. Ask Cline to explain one event handler instead of the whole app.",
+      "resources": ["web", "node"],
+      "reflection": "Trace one click through your code. What changes, and what makes the screen update?"
+    },
+    {
+      "id": "F5",
+      "title": "Check it. Then show it.",
+      "time": 40,
+      "kind": "Checkpoint",
+      "summary": "Write a useful test and demo your first working app.",
+      "predictPrompt": "What does a passing test tell you? What could still be broken?",
+      "lesson": "A test checks a specific expectation. It cannot prove that every possible input or interaction works. Start with a behavior you care about: for example, an empty task must not enter the list.\n\nAsk Cline to help write a focused test using your project's test runner. See it fail for the intended reason, make the correction, then see it pass. Also try the app yourself. Save your work in Git: a commit records local history, while a push shares it with the remote repository. Use a practice branch and ask your mentor for help with your first commit.",
+      "proveTask": "Write one meaningful test for your To-Do app, observe it fail, and fix the behavior. Run the app, save your work on a branch, and give your mentor a short demo of adding, completing, and removing a task.",
+      "checklist": [
+        "I saw my test fail for the expected reason.",
+        "The test passes after the fix.",
+        "My work is saved in a repository.",
+        "I can demonstrate and explain one interaction."
+      ],
+      "hint": "An assertion that a task count increases after valid input is useful. Merely checking that a function exists does not check the user's behavior.",
+      "resources": ["git"],
+      "reflection": "Name one behavior your test checks and one it does not."
+    },
+    {
+      "id": "P1",
+      "concept": "Understanding a project brief",
+      "title": "Understand the real problem",
+      "time": 25,
+      "kind": "Explore",
+      "summary": "Turn your mentor's assignment into a clear, small outcome.",
+      "predictPrompt": "What would you need to know before changing an application you have never worked on?",
+      "lesson": "A useful project brief explains who has a problem, what happens today, and what should happen instead. Acceptance criteria are observable checks that tell you when the task is complete.\n\nAsk your mentor for the repository, setup instructions, team conventions, and one small task. Restate the task in plain language before coding. If 'improve the page' is the brief, ask which person needs what improvement. Write down what is outside the task so a small fix does not become a redesign.",
+      "proveTask": "Meet your mentor, choose an assigned feature or fix, and write a brief with the user problem, expected behavior, three acceptance checks, and one thing you will leave outside the task.",
+      "checklist": [
+        "I have access to the project and its instructions.",
+        "I can explain who this task helps.",
+        "My mentor and I agree on the acceptance criteria."
+      ],
+      "hint": "Use: 'When [person] does [action], they should see [result].' An example is often clearer than a broad adjective like better.",
+      "resources": ["git"],
+      "reflection": "What assumption did you need your mentor to clarify?"
+    },
+    {
+      "id": "F6",
+      "title": "Run and map the project",
+      "time": 40,
+      "kind": "Explore",
+      "summary": "Understand dependencies, configuration, and the code around your task.",
+      "predictPrompt": "Why could the same code work on a teammate's laptop but fail on yours?",
+      "lesson": "A dependency is code a project uses from another package. package.json describes dependencies and scripts; a lockfile records resolved versions. npm install installs the dependency tree, while npm ci uses an existing matching lockfile for a clean install.\n\nRuntime versions and configuration also matter. Follow the README and use the supplied example environment file. Get real credentials through your mentor's approved process. Never commit them. If a real credential is exposed, alert the mentor promptly so it can be revoked or rotated; deleting a file alone does not make the credential safe.",
+      "proveTask": "Run the assigned project using its instructions. Locate the start and test scripts, one interface file, and the code that handles its data. In a disposable example, identify a fake secret and explain why ignoring a file does not remove previous commits.",
+      "checklist": [
+        "The project runs locally.",
+        "I found its start and test commands.",
+        "I can point to the files relevant to my task.",
+        "I know where to ask for missing configuration."
+      ],
+      "hint": "Start with the scripts section of package.json and the README. You are mapping one feature, not memorising the whole repository.",
+      "resources": ["node", "git"],
+      "reflection": "What did the setup instructions assume that a beginner might not know?"
+    },
+    {
+      "id": "F3",
+      "title": "Follow a request",
+      "time": 25,
+      "kind": "Explore",
+      "summary": "See how the browser and server exchange information.",
+      "predictPrompt": "Does receiving a response from a server always mean the operation worked?",
+      "lesson": "An API gives programs an agreed way to exchange requests and responses. A request includes a method such as GET or POST and a destination. A response includes a status code and often a body such as JSON.\n\nA 200 response usually indicates success; 404 means a resource was not found; 401 indicates authentication is required or invalid. Read the body as well as the status. In your browser's developer tools, the Network panel shows these exchanges. A frontend should explain failures to the person using it rather than silently leaving the page unchanged.",
+      "proveTask": "Inspect a request made by your project, or this learning app's /api/health endpoint. Identify its method, path, status, and response body. Explain what a useful error message would look like if that request failed.",
+      "checklist": [
+        "I found a real request.",
+        "I explained its status and body.",
+        "I described an appropriate failure state."
+      ],
+      "hint": "Open developer tools, choose Network, and perform one action. Start with a Fetch/XHR request, avoiding any credential values in screenshots.",
+      "resources": ["web"],
+      "reflection": "Which part of the response tells you whether the request succeeded?"
+    },
+    {
+      "id": "P2",
+      "concept": "Implementing a scoped feature",
+      "title": "Make one useful change",
+      "time": 60,
+      "kind": "Build",
+      "summary": "Plan, implement, and verify a small contribution.",
+      "predictPrompt": "What is the smallest change that would satisfy your task's acceptance criteria?",
+      "lesson": "Start by reading the existing behavior. Ask Cline to locate related files and explain the path through them. Compare its explanation with the code and with what you observe in the running app.\n\nCreate a branch using your team's convention. Ask for a plan scoped to your acceptance criteria. Implement one piece at a time and inspect the diff after each meaningful change. Test a normal case and a likely edge case. Keep unrelated cleanup for another task so the reviewer can understand this change.",
+      "proveTask": "Implement the mentor-assigned feature or fix on a branch. Walk through each acceptance criterion and add a relevant test. Record any uncertainty you want the reviewer to check.",
+      "checklist": [
+        "My change satisfies the agreed scope.",
+        "I checked a normal case and an edge case.",
+        "I added or updated a relevant test.",
+        "I reviewed the diff for unrelated changes."
+      ],
+      "hint": "If you cannot describe the change in two sentences, break it into a smaller task with your mentor.",
+      "resources": ["react", "git"],
+      "reflection": "What did you change after reading the existing implementation?"
+    },
+    {
+      "id": "F4",
+      "title": "Prepare your first review",
+      "time": 30,
+      "kind": "Checkpoint",
+      "summary": "Use branches, commits, and a clear review handoff.",
+      "predictPrompt": "What does a reviewer need to know beyond seeing the changed code?",
+      "lesson": "A branch gives a change its own line of development. Commits record snapshots of that work. A pull request brings the proposed changes into a conversation before they join the shared branch.\n\nGive your review a clear title and describe the problem, the change, and how you checked it. Include a screenshot for a visible change and mention anything uncertain. A branch helps isolate work, but it does not automatically make the main branch safe; tests, review, and team practices do that. Follow your team's process for merging.",
+      "proveTask": "Commit and push your scoped change. Prepare a review handoff or draft pull request with a problem statement, a short change summary, verification steps, and one reviewer question if needed.",
+      "checklist": [
+        "My changes are on a task branch.",
+        "My commits describe the work.",
+        "My handoff explains behavior and verification.",
+        "I shared the review with my mentor using the team's process."
+      ],
+      "hint": "A useful title describes the outcome: 'Reject empty task titles' is more informative than 'Update files'.",
+      "resources": ["git"],
+      "reflection": "What information would make this change easier for a teammate to review?"
+    },
+    {
+      "id": "R1",
+      "concept": "Using code review feedback",
+      "title": "Turn feedback into a plan",
+      "time": 25,
+      "kind": "Reflect",
+      "summary": "Read review comments with curiosity and act on them.",
+      "predictPrompt": "If a reviewer asks for changes, does that mean your whole solution was wrong?",
+      "lesson": "Review is a conversation about making a change fit the project. A comment might concern a bug, an unclear name, a missing test, or a choice whose reasoning is not visible.\n\nRead all the comments before editing. Separate questions from requested changes. Restate anything confusing and ask for an example. Make a short action list, work through it, and reply with what changed or why you propose another approach. Avoid letting AI answer a review comment about code you have not understood.",
+      "proveTask": "Read the feedback on your first contribution. Create an action list, clarify one uncertain point if needed, and address the agreed changes.",
+      "checklist": [
+        "I understood the feedback before editing.",
+        "I addressed or discussed every requested change.",
+        "I can explain why the revision improves the work."
+      ],
+      "hint": "Try: 'I think you mean X because Y. Is that right?' This gives the reviewer something concrete to confirm.",
+      "resources": ["git"],
+      "reflection": "Which comment changed how you think about the problem?"
+    },
+    {
+      "id": "R2",
+      "concept": "Refactoring with confidence",
+      "title": "Make the code easier to read",
+      "time": 35,
+      "kind": "Practice",
+      "summary": "Improve structure while protecting the behavior that already works.",
+      "predictPrompt": "How would you tell whether a cleanup accidentally changed the app's behavior?",
+      "lesson": "Refactoring improves internal structure while preserving intended behavior. Examples include choosing a clearer name, extracting a repeated calculation, or simplifying a deeply nested condition.\n\nChoose one specific source of confusion. Check the relevant behavior before editing, make a small change, and run the checks again. Readability is about helping the next person understand intent. Fewer lines are not automatically easier to understand. Describe the improvement in terms of what a future reader can now see.",
+      "proveTask": "With your mentor's feedback in mind, refactor one small area. Demonstrate that its relevant tests still pass and explain the before-and-after difference.",
+      "checklist": [
+        "I chose one specific clarity problem.",
+        "I preserved the intended behavior.",
+        "I ran the relevant checks.",
+        "I can explain why the revised code is easier to follow."
+      ],
+      "hint": "Start with a confusing name or repeated condition. Avoid reorganising the entire project.",
+      "resources": ["react"],
+      "reflection": "What could a new teammate understand more easily now?"
+    },
+    {
+      "id": "R3",
+      "concept": "Usability and interface states",
+      "title": "Build for the person using it",
+      "time": 45,
+      "kind": "Build",
+      "summary": "Improve labels, feedback, and the small states that make a UI useful.",
+      "predictPrompt": "When a request takes a few seconds, what should the person using the app see?",
+      "lesson": "An interface needs more than its successful, populated state. Consider waiting, empty results, errors, and a successful save. Explain what happened and offer a useful next action.\n\nUse labels that describe an action, preserve input after a failure, and prevent duplicate submissions while a request is pending. Try the flow with a keyboard and on a narrow screen. Give controls visible focus and do not use color as the only signal. Small changes like a clear error beside a field can remove substantial confusion.",
+      "proveTask": "Choose one interaction with your mentor and improve it. Check its empty, loading, error, and success states as applicable. Try the flow with a keyboard and at a mobile width.",
+      "checklist": [
+        "The action and its feedback are clear.",
+        "Input survives a failed submission.",
+        "The flow is usable with a keyboard.",
+        "The layout works on a narrow screen."
+      ],
+      "hint": "Try the browser's offline mode to see how a request failure feels. Restore connectivity afterward.",
+      "resources": ["web"],
+      "reflection": "Which small detail made the biggest difference for the user?"
+    },
+    {
+      "id": "R4",
+      "concept": "Breaking down a larger task",
+      "title": "Take the next challenge",
+      "time": 60,
+      "kind": "Build",
+      "summary": "Use what you know on a slightly more demanding task.",
+      "predictPrompt": "Which part of your next task is familiar, and which part needs investigation?",
+      "lesson": "A larger task becomes manageable when you split it into observable outcomes. Identify the unknowns before writing code: unfamiliar data, unclear requirements, or a new interaction.\n\nWrite a few steps small enough to check individually. Use AI to investigate one uncertainty at a time, then compare its suggestions with project conventions. If the task expands, discuss the boundary with your mentor. Finishing a focused contribution is more useful than leaving several speculative improvements half-done.",
+      "proveTask": "Choose a second, slightly more challenging task with your mentor. Break it into small steps, implement it, and record a tradeoff you made.",
+      "checklist": [
+        "My mentor agreed on the task.",
+        "I broke it into verifiable steps.",
+        "I checked the finished behavior.",
+        "I recorded one decision and its tradeoff."
+      ],
+      "hint": "Start by separating what you know, what you assume, and what you need to ask.",
+      "resources": ["react", "git"],
+      "reflection": "What did your first contribution make easier this time?"
+    },
+    {
+      "id": "F7",
+      "title": "Submit and follow the checks",
+      "time": 30,
+      "kind": "Checkpoint",
+      "summary": "Understand what automated checks and human review each contribute.",
+      "predictPrompt": "What does a green CI check tell you, and what does it leave undecided?",
+      "lesson": "Continuous integration runs configured checks when code changes. Depending on the project, it may run tests, check formatting, or build the application. Continuous delivery or deployment adds steps for preparing or publishing a release.\n\nA green result means those configured checks passed. It does not mean every behavior was tested or that the feature solves the right problem. Read failures from their first useful error, compare the environment with your local setup, and ask for help when needed. Follow the team's release process; do not deploy just because a check is green.",
+      "proveTask": "Submit or update your pull requests. Read their actual automated checks and explain what each validates. If the repository has no CI, inspect a mentor-provided sample and clearly label it as an example.",
+      "checklist": [
+        "My PR explains the change and verification.",
+        "I addressed review feedback.",
+        "I can explain the checks or the sample pipeline.",
+        "I know who decides whether to merge."
+      ],
+      "hint": "A failing build and a failing behavior test are different problems. Read the failing step before asking the AI for a fix.",
+      "resources": ["git"],
+      "reflection": "What still needs human judgment after the checks pass?"
+    },
+    {
+      "id": "D1",
+      "concept": "Finishing a reviewed contribution",
+      "title": "Close the remaining gaps",
+      "time": 35,
+      "kind": "Practice",
+      "summary": "Bring open work to an honest, reviewable stopping point.",
+      "predictPrompt": "What should be true before your work is ready to merge?",
+      "lesson": "Finishing means comparing the actual result with the agreed scope. Walk through acceptance criteria, check unresolved review comments, and make sure relevant verification reflects the latest change.\n\nAsk the appropriate teammate to review and merge according to team practice. Record the true status of each contribution. If someone else's review is still pending, say so and continue with handover and demo preparation. Do not claim a merge or release happened when it has not.",
+      "proveTask": "Review your open work with your mentor. Resolve remaining items, request the appropriate merge step, and record any blocker and its owner.",
+      "checklist": [
+        "I checked the final acceptance criteria.",
+        "Review comments are resolved or explicitly tracked.",
+        "My recorded merge status is accurate."
+      ],
+      "hint": "List each open PR, its current status, and the next person or action needed. This makes waiting work visible.",
+      "resources": ["git"],
+      "reflection": "What does finished mean for this team?"
+    },
+    {
+      "id": "D2",
+      "concept": "Writing a technical handover",
+      "title": "Leave a useful handover",
+      "time": 40,
+      "kind": "Write",
+      "summary": "Help a teammate run, understand, and continue your work.",
+      "predictPrompt": "What would a teammate need if you were unavailable tomorrow?",
+      "lesson": "Useful documentation answers a reader's next question. Explain what the feature does, how to run it, how to check it, and which decisions or limitations matter.\n\nUse concrete commands and expected outcomes. Keep secrets out of examples. Include known issues and links to relevant work. Verify your instructions in a fresh terminal or ask a teammate to follow one section. The best test of a handover is whether someone else can use it.",
+      "proveTask": "Write a short handover covering setup, changed behavior, verification, key decisions, known limitations, and next steps. Ask someone to follow one instruction and revise any unclear wording.",
+      "checklist": [
+        "Setup and verification steps are included.",
+        "I documented a decision and any known limitations.",
+        "Someone tried an instruction.",
+        "No credentials are included."
+      ],
+      "hint": "Write for a teammate who knows the project but has not seen your feature. Lead with what they need to do.",
+      "resources": ["docs"],
+      "reflection": "Which instruction became clearer after someone else tried it?"
+    },
+    {
+      "id": "D3",
+      "concept": "Preparing a technical demonstration",
+      "title": "Tell the story of your build",
+      "time": 35,
+      "kind": "Prepare",
+      "summary": "Plan a focused 5–10 minute demo.",
+      "predictPrompt": "What will help your audience understand the value before they see the code?",
+      "lesson": "Start with the user and their problem. Show the working flow, then explain one interesting decision and how you verified it. Finish with a limitation and a lesson learned.\n\nFor a 5–10 minute demo, aim for about one minute of context, three to five minutes showing the feature, and two minutes on decisions and learning. Rehearse with a timer. Prepare a screenshot or recording in case the live environment fails. A small feature explained clearly is a strong demonstration.",
+      "proveTask": "Prepare your demo outline and rehearse it once. Include the problem, a working interaction, one technical decision, verification, and your next improvement.",
+      "checklist": [
+        "My story starts with the user problem.",
+        "The live flow is ready.",
+        "I rehearsed within 5–10 minutes.",
+        "I have a fallback if the live demo fails."
+      ],
+      "hint": "Show the outcome before opening code. Choose just one code example that helps explain a decision.",
+      "resources": ["docs"],
+      "reflection": "What can you remove to make the story clearer?"
+    },
+    {
+      "id": "D4",
+      "concept": "Explaining your own implementation",
+      "title": "Show it. Explain it. Own it.",
+      "time": 30,
+      "kind": "Demo",
+      "summary": "Demonstrate the work and explain the choices in your own words.",
+      "ai": "Explain without AI",
+      "predictPrompt": "Which part of your implementation would be hardest to explain without an AI assistant?",
+      "lesson": "Understanding becomes visible when you can explain cause and effect. Describe what a user does, where the request or event goes, what changes, and what the user sees.\n\nBe honest about AI assistance and about uncertainty. You can say, 'I do not know yet; here is how I would investigate.' During your independent explanation, close the assistant and rely on the code, your notes, and your own reasoning. Your mentor is checking how you think, not whether you memorised every line.",
+      "proveTask": "Present your demo to the team. Without AI assistance, trace one interaction through the implementation and answer your mentor's questions. Record a question you want to investigate afterward.",
+      "checklist": [
+        "I delivered the demo.",
+        "I explained one interaction without AI.",
+        "I described how I checked the change.",
+        "I recorded a useful follow-up question."
+      ],
+      "hint": "Choose an interaction you built and follow the files in order. If you get stuck, state what you know and where you would look next.",
+      "resources": [],
+      "reflection": "Which explanation felt most confident, and where do you still need practice?"
+    },
+    {
+      "id": "D5",
+      "concept": "Reflecting and choosing a learning goal",
+      "title": "Look back. Choose what’s next.",
+      "time": 20,
+      "kind": "Reflect",
+      "summary": "Notice your progress and choose one useful next step.",
+      "predictPrompt": "Which skill do you trust more now than when you began?",
+      "lesson": "A useful reflection connects a claim to evidence. Instead of 'I learned Git', describe the branch, commit, or review you handled and what you understand about it now.\n\nCompare your earliest predictions with your current explanations. Notice a habit that helped, a mistake you learned from, and something you still cannot do independently. Choose one small next goal with a clear task and a way to know it worked. Learning continues after the program ends.",
+      "proveTask": "Write a reflection with one achievement and its evidence, one surprising lesson, one limitation, and one next goal. Share it with your mentor as part of the final checkpoint.",
+      "checklist": [
+        "I linked an achievement to real work.",
+        "I named a limitation honestly.",
+        "My next goal has a concrete practice task.",
+        "My handover and demo evidence are ready."
+      ],
+      "hint": "Try: 'Before, I thought… Now, I can… I know because… Next, I will…'",
+      "resources": [],
+      "reflection": "What advice would you give the next intern on their first day?"
+    }
+  ]
+}

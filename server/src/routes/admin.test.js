@@ -1,12 +1,14 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import request from 'supertest';
-import { createApp } from '../app.js';
-import { resetTestEnv } from '../testUtils.js';
+import { beforeEach, describe, expect, it } from "vitest";
+import request from "supertest";
+import { createApp } from "../app.js";
+import { resetTestEnv } from "../testUtils.js";
 
 let app;
 
 async function registerAndLogin(agent, email, name) {
-  await agent.post('/api/auth/register').send({ email, name, password: 'password123' });
+  await agent
+    .post("/api/auth/register")
+    .send({ email, name, password: "password123" });
 }
 
 beforeEach(() => {
@@ -14,337 +16,372 @@ beforeEach(() => {
   app = createApp();
 });
 
-describe('GET /api/admin/users', () => {
-  it('rejects a request with no session', async () => {
-    const res = await request(app).get('/api/admin/users');
+describe("GET /api/admin/users", () => {
+  it("rejects a request with no session", async () => {
+    const res = await request(app).get("/api/admin/users");
     expect(res.status).toBe(401);
   });
 
-  it('rejects a non-mentor user', async () => {
+  it("rejects a non-mentor user", async () => {
     const agent = request.agent(app);
-    await registerAndLogin(agent, 'intern@example.com', 'Intern');
+    await registerAndLogin(agent, "intern@example.com", "Intern");
 
-    const res = await agent.get('/api/admin/users');
+    const res = await agent.get("/api/admin/users");
     expect(res.status).toBe(403);
   });
 
-  it('lists users for the mentor', async () => {
+  it("lists users for the mentor", async () => {
     const internAgent = request.agent(app);
-    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
 
     const mentorAgent = request.agent(app);
-    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
 
-    const res = await mentorAgent.get('/api/admin/users');
+    const res = await mentorAgent.get("/api/admin/users");
     expect(res.status).toBe(200);
     expect(res.body.map((u) => u.email).sort()).toEqual([
-      'intern@example.com',
-      'mentor@example.com',
+      "intern@example.com",
+      "mentor@example.com",
     ]);
-    expect(res.body[0]).not.toHaveProperty('password_hash');
+    expect(res.body[0]).not.toHaveProperty("password_hash");
   });
 });
 
-describe('DELETE /api/admin/users/:email', () => {
-  it('lets the mentor reset another user, allowing re-registration', async () => {
+describe("DELETE /api/admin/users/:email", () => {
+  it("lets the mentor reset another user, allowing re-registration", async () => {
     const internAgent = request.agent(app);
-    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
 
     const mentorAgent = request.agent(app);
-    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
 
-    const deleteRes = await mentorAgent.delete('/api/admin/users/intern@example.com');
+    const deleteRes = await mentorAgent.delete(
+      "/api/admin/users/intern@example.com",
+    );
     expect(deleteRes.status).toBe(204);
 
-    const reRegisterRes = await request(app).post('/api/auth/register').send({
-      email: 'intern@example.com',
-      name: 'Intern',
-      password: 'newpassword123',
+    const reRegisterRes = await request(app).post("/api/auth/register").send({
+      email: "intern@example.com",
+      name: "Intern",
+      password: "newpassword123",
     });
     expect(reRegisterRes.status).toBe(201);
   });
 
-  it('does not let the mentor reset their own account', async () => {
+  it("does not let the mentor reset their own account", async () => {
     const mentorAgent = request.agent(app);
-    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
 
-    const res = await mentorAgent.delete('/api/admin/users/mentor@example.com');
+    const res = await mentorAgent.delete("/api/admin/users/mentor@example.com");
     expect(res.status).toBe(400);
   });
 });
 
-describe('GET /api/admin/checkpoints', () => {
-  it('reports week 1 gate as failed until F1-F3 are all done', async () => {
+describe("GET /api/admin/checkpoints", () => {
+  it("reports week 1 gate as failed until F1-F3 are all done", async () => {
     const internAgent = request.agent(app);
-    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
-    await internAgent.post('/api/progress/F1/prediction').send({ text: 'Guess.' });
-    await internAgent.post('/api/progress/F1/step').send({ step: 'done' });
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
+    await internAgent
+      .post("/api/progress/F1/prediction")
+      .send({ text: "Guess." });
+    await internAgent.post("/api/progress/F1/step").send({ step: "prove" });
+    await internAgent.post("/api/progress/F1/step").send({ step: "done" });
 
     const mentorAgent = request.agent(app);
-    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
 
-    const res = await mentorAgent.get('/api/admin/checkpoints');
+    const res = await mentorAgent.get("/api/admin/checkpoints");
     expect(res.status).toBe(200);
 
-    const intern = res.body.find((u) => u.email === 'intern@example.com');
+    const intern = res.body.find((u) => u.email === "intern@example.com");
     const week1 = intern.weeks.find((w) => w.week === 1);
     expect(week1.gatePassed).toBe(false);
     expect(week1.signedOffAt).toBeNull();
   });
 
-  it('reports week 1 gate as passed once F1-F3 are all done', async () => {
+  it("reports week 1 gate as passed once F1-F3 are all done", async () => {
     const internAgent = request.agent(app);
-    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
-    for (const conceptId of ['F1', 'F2', 'F3']) {
-      await internAgent.post(`/api/progress/${conceptId}/prediction`).send({ text: 'Guess.' });
-      await internAgent.post(`/api/progress/${conceptId}/step`).send({ step: 'done' });
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
+    for (const conceptId of ["F1", "F2", "F3"]) {
+      await internAgent
+        .post(`/api/progress/${conceptId}/prediction`)
+        .send({ text: "Guess." });
+      await internAgent
+        .post(`/api/progress/${conceptId}/step`)
+        .send({ step: "prove" });
+      await internAgent
+        .post(`/api/progress/${conceptId}/step`)
+        .send({ step: "done" });
     }
 
     const mentorAgent = request.agent(app);
-    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
 
-    const res = await mentorAgent.get('/api/admin/checkpoints');
-    const intern = res.body.find((u) => u.email === 'intern@example.com');
+    const res = await mentorAgent.get("/api/admin/checkpoints");
+    const intern = res.body.find((u) => u.email === "intern@example.com");
     const week1 = intern.weeks.find((w) => w.week === 1);
     expect(week1.gatePassed).toBe(true);
   });
 
-  it('does not list the mentor among the interns', async () => {
+  it("does not list the mentor among the interns", async () => {
     const mentorAgent = request.agent(app);
-    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
 
-    const res = await mentorAgent.get('/api/admin/checkpoints');
-    expect(res.body.some((u) => u.email === 'mentor@example.com')).toBe(false);
+    const res = await mentorAgent.get("/api/admin/checkpoints");
+    expect(res.body.some((u) => u.email === "mentor@example.com")).toBe(false);
   });
 
-  it('includes submitted predictions for that week, and omits unsubmitted ones', async () => {
+  it("includes submitted predictions for that week, and omits unsubmitted ones", async () => {
     const internAgent = request.agent(app);
-    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
     await internAgent
-      .post('/api/progress/F1/prediction')
-      .send({ text: 'A terminal runs commands.' });
+      .post("/api/progress/F1/prediction")
+      .send({ text: "A terminal runs commands." });
 
     const mentorAgent = request.agent(app);
-    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
 
-    const res = await mentorAgent.get('/api/admin/checkpoints');
+    const res = await mentorAgent.get("/api/admin/checkpoints");
     const week1 = res.body
-      .find((u) => u.email === 'intern@example.com')
+      .find((u) => u.email === "intern@example.com")
       .weeks.find((w) => w.week === 1);
 
     expect(week1.predictions).toEqual([
       {
-        conceptId: 'F1',
-        concept: 'What software is; files, folders, and the terminal',
-        text: 'A terminal runs commands.',
+        conceptId: "F1",
+        concept: "What software is; files, folders, and the terminal",
+        text: "A terminal runs commands.",
         wrongFlag: false,
       },
     ]);
   });
 });
 
-describe('POST /api/admin/checkpoints/:email/:week', () => {
-  it('rejects sign-off before the gate is passed', async () => {
+describe("POST /api/admin/checkpoints/:email/:week", () => {
+  it("rejects sign-off before the gate is passed", async () => {
     const internAgent = request.agent(app);
-    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
 
     const mentorAgent = request.agent(app);
-    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
 
     const res = await mentorAgent
-      .post('/api/admin/checkpoints/intern@example.com/1')
-      .send({ notes: 'Looks good' });
+      .post("/api/admin/checkpoints/intern@example.com/1")
+      .send({ notes: "Looks good" });
     expect(res.status).toBe(400);
   });
 
-  it('signs off once the gate is passed', async () => {
+  it("signs off once the gate is passed", async () => {
     const internAgent = request.agent(app);
-    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
-    for (const conceptId of ['F1', 'F2', 'F3']) {
-      await internAgent.post(`/api/progress/${conceptId}/prediction`).send({ text: 'Guess.' });
-      await internAgent.post(`/api/progress/${conceptId}/step`).send({ step: 'done' });
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
+    for (const conceptId of ["F1", "F2", "F3"]) {
+      await internAgent
+        .post(`/api/progress/${conceptId}/prediction`)
+        .send({ text: "Guess." });
+      await internAgent
+        .post(`/api/progress/${conceptId}/step`)
+        .send({ step: "prove" });
+      await internAgent
+        .post(`/api/progress/${conceptId}/step`)
+        .send({ step: "done" });
     }
 
     const mentorAgent = request.agent(app);
-    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
 
     const signOffRes = await mentorAgent
-      .post('/api/admin/checkpoints/intern@example.com/1')
-      .send({ notes: 'Great work' });
+      .post("/api/admin/checkpoints/intern@example.com/1")
+      .send({ notes: "Great work" });
     expect(signOffRes.status).toBe(204);
 
-    const checkpoints = await mentorAgent.get('/api/admin/checkpoints');
+    const checkpoints = await mentorAgent.get("/api/admin/checkpoints");
     const week1 = checkpoints.body
-      .find((u) => u.email === 'intern@example.com')
+      .find((u) => u.email === "intern@example.com")
       .weeks.find((w) => w.week === 1);
     expect(week1.signedOffAt).toBeTruthy();
-    expect(week1.mentorNotes).toBe('Great work');
+    expect(week1.mentorNotes).toBe("Great work");
   });
 
-  it('rejects a non-mentor', async () => {
+  it("rejects a non-mentor", async () => {
     const internAgent = request.agent(app);
-    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
 
     const res = await internAgent
-      .post('/api/admin/checkpoints/intern@example.com/1')
-      .send({ notes: 'nope' });
+      .post("/api/admin/checkpoints/intern@example.com/1")
+      .send({ notes: "nope" });
     expect(res.status).toBe(403);
   });
 });
 
-describe('PATCH /api/admin/predictions/:email/:conceptId', () => {
-  it('flags a prediction as wrong, and it shows up in checkpoints', async () => {
+describe("PATCH /api/admin/predictions/:email/:conceptId", () => {
+  it("flags a prediction as wrong, and it shows up in checkpoints", async () => {
     const internAgent = request.agent(app);
-    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
-    await internAgent.post('/api/progress/F1/prediction').send({ text: 'Guess.' });
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
+    await internAgent
+      .post("/api/progress/F1/prediction")
+      .send({ text: "Guess." });
 
     const mentorAgent = request.agent(app);
-    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
 
     const flagRes = await mentorAgent
-      .patch('/api/admin/predictions/intern@example.com/F1')
+      .patch("/api/admin/predictions/intern@example.com/F1")
       .send({ wrongFlag: true });
     expect(flagRes.status).toBe(204);
 
-    const checkpoints = await mentorAgent.get('/api/admin/checkpoints');
+    const checkpoints = await mentorAgent.get("/api/admin/checkpoints");
     const week1 = checkpoints.body
-      .find((u) => u.email === 'intern@example.com')
+      .find((u) => u.email === "intern@example.com")
       .weeks.find((w) => w.week === 1);
     expect(week1.predictions[0].wrongFlag).toBe(true);
   });
 
-  it('does not expose the wrong flag to the intern-facing progress endpoint', async () => {
+  it("does not expose the wrong flag to the intern-facing progress endpoint", async () => {
     const internAgent = request.agent(app);
-    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
-    await internAgent.post('/api/progress/F1/prediction').send({ text: 'Guess.' });
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
+    await internAgent
+      .post("/api/progress/F1/prediction")
+      .send({ text: "Guess." });
 
     const mentorAgent = request.agent(app);
-    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
     await mentorAgent
-      .patch('/api/admin/predictions/intern@example.com/F1')
+      .patch("/api/admin/predictions/intern@example.com/F1")
       .send({ wrongFlag: true });
 
-    const progress = await internAgent.get('/api/progress');
+    const progress = await internAgent.get("/api/progress");
     expect(JSON.stringify(progress.body)).not.toMatch(/wrong/i);
   });
 
-  it('404s for a concept with no submitted prediction', async () => {
+  it("404s for a concept with no submitted prediction", async () => {
     const internAgent = request.agent(app);
-    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
 
     const mentorAgent = request.agent(app);
-    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
 
     const res = await mentorAgent
-      .patch('/api/admin/predictions/intern@example.com/F1')
+      .patch("/api/admin/predictions/intern@example.com/F1")
       .send({ wrongFlag: true });
     expect(res.status).toBe(404);
   });
 
-  it('rejects a non-mentor', async () => {
+  it("rejects a non-mentor", async () => {
     const internAgent = request.agent(app);
-    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
-    await internAgent.post('/api/progress/F1/prediction').send({ text: 'Guess.' });
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
+    await internAgent
+      .post("/api/progress/F1/prediction")
+      .send({ text: "Guess." });
 
     const res = await internAgent
-      .patch('/api/admin/predictions/intern@example.com/F1')
+      .patch("/api/admin/predictions/intern@example.com/F1")
       .send({ wrongFlag: true });
     expect(res.status).toBe(403);
   });
 });
 
-describe('GET /api/admin/questions', () => {
-  it('lists flagged questions across interns', async () => {
+describe("GET /api/admin/questions", () => {
+  it("lists flagged questions across interns", async () => {
     const internAgent = request.agent(app);
-    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
-    await internAgent.post('/api/questions').send({ text: 'What is a lockfile?' });
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
+    await internAgent
+      .post("/api/questions")
+      .send({ text: "What is a lockfile?" });
 
     const mentorAgent = request.agent(app);
-    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
 
-    const res = await mentorAgent.get('/api/admin/questions');
+    const res = await mentorAgent.get("/api/admin/questions");
     expect(res.status).toBe(200);
     expect(res.body).toHaveLength(1);
     expect(res.body[0]).toMatchObject({
-      userEmail: 'intern@example.com',
-      questionText: 'What is a lockfile?',
+      userEmail: "intern@example.com",
+      questionText: "What is a lockfile?",
     });
   });
 
-  it('rejects a non-mentor', async () => {
+  it("rejects a non-mentor", async () => {
     const internAgent = request.agent(app);
-    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
 
-    const res = await internAgent.get('/api/admin/questions');
+    const res = await internAgent.get("/api/admin/questions");
     expect(res.status).toBe(403);
   });
 });
 
-describe('POST /api/admin/questions/:id/answer', () => {
-  it('answers a question and removes it from the flagged list', async () => {
+describe("POST /api/admin/questions/:id/answer", () => {
+  it("answers a question and removes it from the flagged list", async () => {
     const internAgent = request.agent(app);
-    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
-    await internAgent.post('/api/questions').send({ text: 'What is a lockfile?' });
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
+    await internAgent
+      .post("/api/questions")
+      .send({ text: "What is a lockfile?" });
 
     const mentorAgent = request.agent(app);
-    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
 
-    const [question] = (await mentorAgent.get('/api/admin/questions')).body;
+    const [question] = (await mentorAgent.get("/api/admin/questions")).body;
     const answerRes = await mentorAgent
       .post(`/api/admin/questions/${question.id}/answer`)
-      .send({ answer: 'It pins exact dependency versions.' });
+      .send({ answer: "It pins exact dependency versions." });
     expect(answerRes.status).toBe(204);
 
-    const flaggedAfter = await mentorAgent.get('/api/admin/questions');
+    const flaggedAfter = await mentorAgent.get("/api/admin/questions");
     expect(flaggedAfter.body).toHaveLength(0);
 
-    const internQuestions = await internAgent.get('/api/questions');
+    const internQuestions = await internAgent.get("/api/questions");
     expect(internQuestions.body[0]).toMatchObject({
-      answer: 'It pins exact dependency versions.',
+      answer: "It pins exact dependency versions.",
     });
     expect(internQuestions.body[0].answeredAt).toBeTruthy();
   });
 
-  it('rejects an empty answer', async () => {
+  it("rejects an empty answer", async () => {
     const internAgent = request.agent(app);
-    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
-    await internAgent.post('/api/questions').send({ text: 'What is a lockfile?' });
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
+    await internAgent
+      .post("/api/questions")
+      .send({ text: "What is a lockfile?" });
 
     const mentorAgent = request.agent(app);
-    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
 
-    const [question] = (await mentorAgent.get('/api/admin/questions')).body;
+    const [question] = (await mentorAgent.get("/api/admin/questions")).body;
     const res = await mentorAgent
       .post(`/api/admin/questions/${question.id}/answer`)
-      .send({ answer: '   ' });
+      .send({ answer: "   " });
     expect(res.status).toBe(400);
   });
 });
 
-describe('PATCH /api/admin/questions/:id/flag', () => {
-  it('dismisses a question without answering it', async () => {
+describe("PATCH /api/admin/questions/:id/flag", () => {
+  it("dismisses a question without answering it", async () => {
     const internAgent = request.agent(app);
-    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
-    await internAgent.post('/api/questions').send({ text: 'What is a lockfile?' });
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
+    await internAgent
+      .post("/api/questions")
+      .send({ text: "What is a lockfile?" });
 
     const mentorAgent = request.agent(app);
-    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
 
-    const [question] = (await mentorAgent.get('/api/admin/questions')).body;
+    const [question] = (await mentorAgent.get("/api/admin/questions")).body;
     const res = await mentorAgent
       .patch(`/api/admin/questions/${question.id}/flag`)
       .send({ flagged: false });
     expect(res.status).toBe(204);
 
-    const flaggedAfter = await mentorAgent.get('/api/admin/questions');
+    const flaggedAfter = await mentorAgent.get("/api/admin/questions");
     expect(flaggedAfter.body).toHaveLength(0);
   });
 
-  it('404s for an unknown question id', async () => {
+  it("404s for an unknown question id", async () => {
     const mentorAgent = request.agent(app);
-    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
 
-    const res = await mentorAgent.patch('/api/admin/questions/999/flag').send({ flagged: false });
+    const res = await mentorAgent
+      .patch("/api/admin/questions/999/flag")
+      .send({ flagged: false });
     expect(res.status).toBe(404);
   });
 });

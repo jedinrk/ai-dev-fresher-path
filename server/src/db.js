@@ -1,17 +1,17 @@
-import path from 'node:path';
-import fs from 'node:fs';
-import Database from 'better-sqlite3';
+import path from "node:path";
+import fs from "node:fs";
+import Database from "better-sqlite3";
 
 let db;
 
 export function getDb() {
   if (db) return db;
 
-  const dbPath = process.env.DB_PATH || './data/app.db';
+  const dbPath = process.env.DB_PATH || "./data/app.db";
   fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 
   db = new Database(dbPath);
-  db.pragma('journal_mode = WAL');
+  db.pragma("journal_mode = WAL");
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -58,6 +58,19 @@ export function getDb() {
       answered_at TEXT,
       flagged INTEGER NOT NULL DEFAULT 1,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS journey_reviews (
+      user_email TEXT NOT NULL,
+      version TEXT NOT NULL,
+      week INTEGER NOT NULL,
+      evidence_url TEXT NOT NULL,
+      summary TEXT NOT NULL,
+      status TEXT NOT NULL CHECK (status IN ('submitted', 'changes_requested', 'approved')),
+      mentor_notes TEXT NOT NULL DEFAULT '',
+      submitted_at TEXT NOT NULL DEFAULT (datetime('now')),
+      reviewed_at TEXT,
+      PRIMARY KEY (user_email, version, week)
     );
   `);
 
