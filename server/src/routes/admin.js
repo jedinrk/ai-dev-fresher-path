@@ -9,6 +9,12 @@ import {
   setWrongFlag,
   signOffCheckpoint,
 } from '../progress.js';
+import {
+  answerQuestion,
+  findQuestionById,
+  getFlaggedQuestions,
+  setQuestionFlag,
+} from '../questions.js';
 import { WEEK_CONCEPTS, WEEKS } from '../weeks.js';
 
 export const adminRouter = Router();
@@ -110,5 +116,47 @@ adminRouter.post('/checkpoints/:email/:week', (req, res) => {
   }
 
   signOffCheckpoint(email, weekNumber, notes);
+  res.status(204).end();
+});
+
+adminRouter.get('/questions', (req, res) => {
+  const questions = getFlaggedQuestions().map((q) => ({
+    id: q.id,
+    userEmail: q.user_email,
+    questionText: q.question_text,
+    createdAt: q.created_at,
+  }));
+  res.json(questions);
+});
+
+adminRouter.post('/questions/:id/answer', (req, res) => {
+  const { id } = req.params;
+  const { answer } = req.body;
+
+  if (!answer || !answer.trim()) {
+    return res.status(400).json({ error: 'answer text is required' });
+  }
+
+  if (!findQuestionById(id)) {
+    return res.status(404).json({ error: 'no such question' });
+  }
+
+  answerQuestion(id, answer.trim());
+  res.status(204).end();
+});
+
+adminRouter.patch('/questions/:id/flag', (req, res) => {
+  const { id } = req.params;
+  const { flagged } = req.body;
+
+  if (typeof flagged !== 'boolean') {
+    return res.status(400).json({ error: 'flagged must be true or false' });
+  }
+
+  if (!findQuestionById(id)) {
+    return res.status(404).json({ error: 'no such question' });
+  }
+
+  setQuestionFlag(id, flagged);
   res.status(204).end();
 });

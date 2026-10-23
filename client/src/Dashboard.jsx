@@ -4,6 +4,8 @@ import { api } from './api'
 function Dashboard() {
   const [interns, setInterns] = useState([])
   const [notes, setNotes] = useState({})
+  const [questions, setQuestions] = useState([])
+  const [answers, setAnswers] = useState({})
   const [error, setError] = useState(null)
 
   function load() {
@@ -11,9 +13,31 @@ function Dashboard() {
       .listCheckpoints()
       .then(setInterns)
       .catch((err) => setError(err.message))
+    api
+      .listFlaggedQuestions()
+      .then(setQuestions)
+      .catch((err) => setError(err.message))
   }
 
   useEffect(load, [])
+
+  async function handleAnswer(id) {
+    try {
+      await api.answerQuestion(id, answers[id] || '')
+      load()
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
+  async function handleDismiss(id) {
+    try {
+      await api.dismissQuestion(id)
+      load()
+    } catch (err) {
+      setError(err.message)
+    }
+  }
 
   async function handleSignOff(email, week) {
     try {
@@ -123,6 +147,44 @@ function Dashboard() {
           </table>
         </div>
       ))}
+
+      <h3>Flagged questions</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>From</th>
+            <th>Question</th>
+            <th>Answer</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          {questions.map((q) => (
+            <tr key={q.id}>
+              <td>{q.userEmail}</td>
+              <td>{q.questionText}</td>
+              <td>
+                <input
+                  type="text"
+                  aria-label={`answer for question ${q.id}`}
+                  value={answers[q.id] || ''}
+                  onChange={(e) =>
+                    setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))
+                  }
+                />
+              </td>
+              <td>
+                <button type="button" onClick={() => handleAnswer(q.id)}>
+                  Answer
+                </button>
+                <button type="button" onClick={() => handleDismiss(q.id)}>
+                  Dismiss
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </section>
   )
 }

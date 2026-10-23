@@ -252,3 +252,99 @@ describe('PATCH /api/admin/predictions/:email/:conceptId', () => {
     expect(res.status).toBe(403);
   });
 });
+
+describe('GET /api/admin/questions', () => {
+  it('lists flagged questions across interns', async () => {
+    const internAgent = request.agent(app);
+    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
+    await internAgent.post('/api/questions').send({ text: 'What is a lockfile?' });
+
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+
+    const res = await mentorAgent.get('/api/admin/questions');
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0]).toMatchObject({
+      userEmail: 'intern@example.com',
+      questionText: 'What is a lockfile?',
+    });
+  });
+
+  it('rejects a non-mentor', async () => {
+    const internAgent = request.agent(app);
+    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
+
+    const res = await internAgent.get('/api/admin/questions');
+    expect(res.status).toBe(403);
+  });
+});
+
+describe('POST /api/admin/questions/:id/answer', () => {
+  it('answers a question and removes it from the flagged list', async () => {
+    const internAgent = request.agent(app);
+    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
+    await internAgent.post('/api/questions').send({ text: 'What is a lockfile?' });
+
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+
+    const [question] = (await mentorAgent.get('/api/admin/questions')).body;
+    const answerRes = await mentorAgent
+      .post(`/api/admin/questions/${question.id}/answer`)
+      .send({ answer: 'It pins exact dependency versions.' });
+    expect(answerRes.status).toBe(204);
+
+    const flaggedAfter = await mentorAgent.get('/api/admin/questions');
+    expect(flaggedAfter.body).toHaveLength(0);
+
+    const internQuestions = await internAgent.get('/api/questions');
+    expect(internQuestions.body[0]).toMatchObject({
+      answer: 'It pins exact dependency versions.',
+    });
+    expect(internQuestions.body[0].answeredAt).toBeTruthy();
+  });
+
+  it('rejects an empty answer', async () => {
+    const internAgent = request.agent(app);
+    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
+    await internAgent.post('/api/questions').send({ text: 'What is a lockfile?' });
+
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+
+    const [question] = (await mentorAgent.get('/api/admin/questions')).body;
+    const res = await mentorAgent
+      .post(`/api/admin/questions/${question.id}/answer`)
+      .send({ answer: '   ' });
+    expect(res.status).toBe(400);
+  });
+});
+
+describe('PATCH /api/admin/questions/:id/flag', () => {
+  it('dismisses a question without answering it', async () => {
+    const internAgent = request.agent(app);
+    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
+    await internAgent.post('/api/questions').send({ text: 'What is a lockfile?' });
+
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+
+    const [question] = (await mentorAgent.get('/api/admin/questions')).body;
+    const res = await mentorAgent
+      .patch(`/api/admin/questions/${question.id}/flag`)
+      .send({ flagged: false });
+    expect(res.status).toBe(204);
+
+    const flaggedAfter = await mentorAgent.get('/api/admin/questions');
+    expect(flaggedAfter.body).toHaveLength(0);
+  });
+
+  it('404s for an unknown question id', async () => {
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+
+    const res = await mentorAgent.patch('/api/admin/questions/999/flag').send({ flagged: false });
+    expect(res.status).toBe(404);
+  });
+});

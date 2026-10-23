@@ -49,6 +49,16 @@ export function getDb() {
       signed_off_at TEXT,
       UNIQUE (user_email, week)
     );
+
+    CREATE TABLE IF NOT EXISTS questions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_email TEXT NOT NULL,
+      question_text TEXT NOT NULL,
+      answer TEXT,
+      answered_at TEXT,
+      flagged INTEGER NOT NULL DEFAULT 1,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 
   return db;

@@ -15,6 +15,8 @@ vi.mock('./api', () => ({
     listConcepts: vi.fn(),
     getProgress: vi.fn(),
     listCheckpoints: vi.fn(),
+    getMyQuestions: vi.fn(),
+    askQuestion: vi.fn(),
   },
 }))
 
@@ -22,6 +24,7 @@ beforeEach(() => {
   api.listConcepts.mockResolvedValue([])
   api.getProgress.mockResolvedValue({ predictions: {}, steps: {} })
   api.listCheckpoints.mockResolvedValue([])
+  api.getMyQuestions.mockResolvedValue([])
 })
 
 afterEach(() => {

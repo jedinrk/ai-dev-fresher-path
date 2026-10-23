@@ -11,11 +11,15 @@ vi.mock('./api', () => ({
     listCheckpoints: vi.fn(),
     signOffCheckpoint: vi.fn(),
     flagPrediction: vi.fn(),
+    listFlaggedQuestions: vi.fn(),
+    answerQuestion: vi.fn(),
+    dismissQuestion: vi.fn(),
   },
 }))
 
 beforeEach(() => {
   api.listCheckpoints.mockResolvedValue([])
+  api.listFlaggedQuestions.mockResolvedValue([])
 })
 
 afterEach(() => {

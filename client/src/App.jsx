@@ -3,6 +3,7 @@ import AdminPanel from './AdminPanel'
 import { api } from './api'
 import AuthForm from './AuthForm'
 import Concepts from './Concepts'
+import Questions from './Questions'
 
 function App() {
   const [user, setUser] = useState(undefined)
@@ -66,6 +67,8 @@ function App() {
       {user.role === 'mentor' && showAdmin && <AdminPanel currentUserEmail={user.email} />}
 
       <Concepts />
+
+      <Questions />
 
       <p>Server status: {status}</p>
     </main>

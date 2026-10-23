@@ -6,6 +6,7 @@ import { adminRouter } from './routes/admin.js';
 import { authRouter } from './routes/auth.js';
 import { contentRouter } from './routes/content.js';
 import { progressRouter } from './routes/progress.js';
+import { questionsRouter } from './routes/questions.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const clientDist = path.join(__dirname, '../../client/dist');
@@ -27,6 +28,7 @@ export function createApp() {
   app.use('/api/admin', adminRouter);
   app.use('/api/content', contentRouter);
   app.use('/api/progress', progressRouter);
+  app.use('/api/questions', questionsRouter);
 
   if (process.env.NODE_ENV === 'production') {
     app.use(express.static(clientDist));

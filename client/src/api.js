@@ -48,4 +48,18 @@ export const api = {
       `/api/admin/predictions/${encodeURIComponent(email)}/${encodeURIComponent(conceptId)}`,
       { method: 'PATCH', body: JSON.stringify({ wrongFlag }) },
     ),
+  getMyQuestions: () => request('/api/questions'),
+  askQuestion: (text) =>
+    request('/api/questions', { method: 'POST', body: JSON.stringify({ text }) }),
+  listFlaggedQuestions: () => request('/api/admin/questions'),
+  answerQuestion: (id, answer) =>
+    request(`/api/admin/questions/${id}/answer`, {
+      method: 'POST',
+      body: JSON.stringify({ answer }),
+    }),
+  dismissQuestion: (id) =>
+    request(`/api/admin/questions/${id}/flag`, {
+      method: 'PATCH',
+      body: JSON.stringify({ flagged: false }),
+    }),
 };

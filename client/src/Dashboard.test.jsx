@@ -1,12 +1,23 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Dashboard from './Dashboard'
 import { api } from './api'
 
 vi.mock('./api', () => ({
-  api: { listCheckpoints: vi.fn(), signOffCheckpoint: vi.fn(), flagPrediction: vi.fn() },
+  api: {
+    listCheckpoints: vi.fn(),
+    signOffCheckpoint: vi.fn(),
+    flagPrediction: vi.fn(),
+    listFlaggedQuestions: vi.fn(),
+    answerQuestion: vi.fn(),
+    dismissQuestion: vi.fn(),
+  },
 }))
+
+beforeEach(() => {
+  api.listFlaggedQuestions.mockResolvedValue([])
+})
 
 afterEach(() => {
   vi.clearAllMocks()
@@ -116,5 +127,47 @@ describe('Dashboard', () => {
     await waitFor(() =>
       expect(api.flagPrediction).toHaveBeenCalledWith('intern@example.com', 'F1', true),
     )
+  })
+
+  it('answers a flagged question', async () => {
+    api.listCheckpoints.mockResolvedValue([])
+    api.listFlaggedQuestions
+      .mockResolvedValueOnce([{ id: 1, userEmail: 'intern@example.com', questionText: 'What is CI?' }])
+      .mockResolvedValueOnce([])
+    api.answerQuestion.mockResolvedValue()
+
+    render(<Dashboard />)
+
+    await waitFor(() => expect(screen.getByText('What is CI?')).toBeInTheDocument())
+
+    await userEvent.type(
+      screen.getByLabelText(/answer for question 1/i),
+      'Runs your build and tests automatically.',
+    )
+    await userEvent.click(screen.getByRole('button', { name: /^answer$/i }))
+
+    await waitFor(() =>
+      expect(api.answerQuestion).toHaveBeenCalledWith(
+        1,
+        'Runs your build and tests automatically.',
+      ),
+    )
+    await waitFor(() => expect(screen.queryByText('What is CI?')).not.toBeInTheDocument())
+  })
+
+  it('dismisses a flagged question without an answer', async () => {
+    api.listCheckpoints.mockResolvedValue([])
+    api.listFlaggedQuestions
+      .mockResolvedValueOnce([{ id: 2, userEmail: 'intern@example.com', questionText: 'Dup question?' }])
+      .mockResolvedValueOnce([])
+    api.dismissQuestion.mockResolvedValue()
+
+    render(<Dashboard />)
+
+    await waitFor(() => expect(screen.getByText('Dup question?')).toBeInTheDocument())
+    await userEvent.click(screen.getByRole('button', { name: /dismiss/i }))
+
+    await waitFor(() => expect(api.dismissQuestion).toHaveBeenCalledWith(2))
+    await waitFor(() => expect(screen.queryByText('Dup question?')).not.toBeInTheDocument())
   })
 })
