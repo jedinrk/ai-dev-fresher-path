@@ -10,6 +10,7 @@ vi.mock('./api', () => ({
     resetUser: vi.fn(),
     listCheckpoints: vi.fn(),
     signOffCheckpoint: vi.fn(),
+    flagPrediction: vi.fn(),
   },
 }))
 

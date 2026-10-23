@@ -116,6 +116,31 @@ describe('GET /api/admin/checkpoints', () => {
     const res = await mentorAgent.get('/api/admin/checkpoints');
     expect(res.body.some((u) => u.email === 'mentor@example.com')).toBe(false);
   });
+
+  it('includes submitted predictions for that week, and omits unsubmitted ones', async () => {
+    const internAgent = request.agent(app);
+    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
+    await internAgent
+      .post('/api/progress/F1/prediction')
+      .send({ text: 'A terminal runs commands.' });
+
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+
+    const res = await mentorAgent.get('/api/admin/checkpoints');
+    const week1 = res.body
+      .find((u) => u.email === 'intern@example.com')
+      .weeks.find((w) => w.week === 1);
+
+    expect(week1.predictions).toEqual([
+      {
+        conceptId: 'F1',
+        concept: 'What software is; files, folders, and the terminal',
+        text: 'A terminal runs commands.',
+        wrongFlag: false,
+      },
+    ]);
+  });
 });
 
 describe('POST /api/admin/checkpoints/:email/:week', () => {
@@ -163,6 +188,67 @@ describe('POST /api/admin/checkpoints/:email/:week', () => {
     const res = await internAgent
       .post('/api/admin/checkpoints/intern@example.com/1')
       .send({ notes: 'nope' });
+    expect(res.status).toBe(403);
+  });
+});
+
+describe('PATCH /api/admin/predictions/:email/:conceptId', () => {
+  it('flags a prediction as wrong, and it shows up in checkpoints', async () => {
+    const internAgent = request.agent(app);
+    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
+    await internAgent.post('/api/progress/F1/prediction').send({ text: 'Guess.' });
+
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+
+    const flagRes = await mentorAgent
+      .patch('/api/admin/predictions/intern@example.com/F1')
+      .send({ wrongFlag: true });
+    expect(flagRes.status).toBe(204);
+
+    const checkpoints = await mentorAgent.get('/api/admin/checkpoints');
+    const week1 = checkpoints.body
+      .find((u) => u.email === 'intern@example.com')
+      .weeks.find((w) => w.week === 1);
+    expect(week1.predictions[0].wrongFlag).toBe(true);
+  });
+
+  it('does not expose the wrong flag to the intern-facing progress endpoint', async () => {
+    const internAgent = request.agent(app);
+    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
+    await internAgent.post('/api/progress/F1/prediction').send({ text: 'Guess.' });
+
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+    await mentorAgent
+      .patch('/api/admin/predictions/intern@example.com/F1')
+      .send({ wrongFlag: true });
+
+    const progress = await internAgent.get('/api/progress');
+    expect(JSON.stringify(progress.body)).not.toMatch(/wrong/i);
+  });
+
+  it('404s for a concept with no submitted prediction', async () => {
+    const internAgent = request.agent(app);
+    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
+
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, 'mentor@example.com', 'Mentor');
+
+    const res = await mentorAgent
+      .patch('/api/admin/predictions/intern@example.com/F1')
+      .send({ wrongFlag: true });
+    expect(res.status).toBe(404);
+  });
+
+  it('rejects a non-mentor', async () => {
+    const internAgent = request.agent(app);
+    await registerAndLogin(internAgent, 'intern@example.com', 'Intern');
+    await internAgent.post('/api/progress/F1/prediction').send({ text: 'Guess.' });
+
+    const res = await internAgent
+      .patch('/api/admin/predictions/intern@example.com/F1')
+      .send({ wrongFlag: true });
     expect(res.status).toBe(403);
   });
 });

@@ -1,8 +1,15 @@
 import { Router } from 'express';
 import { requireAdmin, requireAuth } from '../auth/middleware.js';
 import { deleteUserByEmail, findUserByEmail, listUsers } from '../auth/users.js';
-import { gateStatusForWeek, getCheckpoint, signOffCheckpoint } from '../progress.js';
-import { WEEKS } from '../weeks.js';
+import { getConcepts } from '../content.js';
+import {
+  gateStatusForWeek,
+  getCheckpoint,
+  getPrediction,
+  setWrongFlag,
+  signOffCheckpoint,
+} from '../progress.js';
+import { WEEK_CONCEPTS, WEEKS } from '../weeks.js';
 
 export const adminRouter = Router();
 
@@ -30,22 +37,57 @@ adminRouter.delete('/users/:email', (req, res) => {
 
 adminRouter.get('/checkpoints', (req, res) => {
   const interns = listUsers().filter((u) => u.role === 'intern');
+  const conceptById = Object.fromEntries(getConcepts().map((c) => [c.id, c]));
 
   const result = interns.map((user) => ({
     email: user.email,
     name: user.name,
     weeks: WEEKS.map((week) => {
       const checkpoint = getCheckpoint(user.email, week);
+      const predictions = (WEEK_CONCEPTS[week] || [])
+        .map((conceptId) => {
+          const prediction = getPrediction(user.email, conceptId);
+          if (!prediction) return null;
+          return {
+            conceptId,
+            concept: conceptById[conceptId]?.concept || conceptId,
+            text: prediction.text,
+            wrongFlag: Boolean(prediction.wrong_flag),
+          };
+        })
+        .filter(Boolean);
+
       return {
         week,
         gatePassed: gateStatusForWeek(user.email, week),
         signedOffAt: checkpoint?.signed_off_at || null,
         mentorNotes: checkpoint?.mentor_notes || '',
+        predictions,
       };
     }),
   }));
 
   res.json(result);
+});
+
+adminRouter.patch('/predictions/:email/:conceptId', (req, res) => {
+  const { email, conceptId } = req.params;
+  const { wrongFlag } = req.body;
+
+  if (typeof wrongFlag !== 'boolean') {
+    return res.status(400).json({ error: 'wrongFlag must be true or false' });
+  }
+
+  if (!findUserByEmail(email)) {
+    return res.status(404).json({ error: 'no such user' });
+  }
+
+  if (!getPrediction(email, conceptId)) {
+    return res.status(404).json({ error: 'no prediction for this concept' });
+  }
+
+  setWrongFlag(email, conceptId, wrongFlag);
+  res.status(204).end();
 });
 
 adminRouter.post('/checkpoints/:email/:week', (req, res) => {

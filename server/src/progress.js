@@ -46,6 +46,14 @@ export function setProgressStep(userEmail, conceptId, step) {
     .run(userEmail, conceptId, step);
 }
 
+export function setWrongFlag(userEmail, conceptId, wrongFlag) {
+  getDb()
+    .prepare(
+      'UPDATE predictions SET wrong_flag = ? WHERE user_email = ? AND concept_id = ?',
+    )
+    .run(wrongFlag ? 1 : 0, userEmail, conceptId);
+}
+
 export function getPredictionsForUser(userEmail) {
   return getDb()
     .prepare('SELECT concept_id, text FROM predictions WHERE user_email = ?')

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from './api'
 
-function CheckpointPanel() {
+function Dashboard() {
   const [interns, setInterns] = useState([])
   const [notes, setNotes] = useState({})
   const [error, setError] = useState(null)
@@ -24,9 +24,18 @@ function CheckpointPanel() {
     }
   }
 
+  async function handleFlagToggle(email, conceptId, wrongFlag) {
+    try {
+      await api.flagPrediction(email, conceptId, wrongFlag)
+      load()
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
   return (
     <section>
-      <h2>Checkpoints</h2>
+      <h2>Dashboard</h2>
       {error && <p role="alert">{error}</p>}
       {interns.map((intern) => (
         <div key={intern.email}>
@@ -79,10 +88,43 @@ function CheckpointPanel() {
               ))}
             </tbody>
           </table>
+
+          <h4>Predictions</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Week</th>
+                <th>Concept</th>
+                <th>Prediction</th>
+                <th>Wrong?</th>
+              </tr>
+            </thead>
+            <tbody>
+              {intern.weeks.flatMap((week) =>
+                week.predictions.map((prediction) => (
+                  <tr key={prediction.conceptId}>
+                    <td>{week.week}</td>
+                    <td>{prediction.concept}</td>
+                    <td>{prediction.text}</td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        aria-label={`${prediction.concept} prediction was wrong`}
+                        checked={prediction.wrongFlag}
+                        onChange={(e) =>
+                          handleFlagToggle(intern.email, prediction.conceptId, e.target.checked)
+                        }
+                      />
+                    </td>
+                  </tr>
+                )),
+              )}
+            </tbody>
+          </table>
         </div>
       ))}
     </section>
   )
 }
 
-export default CheckpointPanel
+export default Dashboard

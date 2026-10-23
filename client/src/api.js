@@ -43,4 +43,9 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ notes }),
     }),
+  flagPrediction: (email, conceptId, wrongFlag) =>
+    request(
+      `/api/admin/predictions/${encodeURIComponent(email)}/${encodeURIComponent(conceptId)}`,
+      { method: 'PATCH', body: JSON.stringify({ wrongFlag }) },
+    ),
 };
