@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 import { api } from './api'
 
@@ -12,8 +12,13 @@ vi.mock('./api', () => ({
     logout: vi.fn(),
     listUsers: vi.fn(),
     resetUser: vi.fn(),
+    listConcepts: vi.fn(),
   },
 }))
+
+beforeEach(() => {
+  api.listConcepts.mockResolvedValue([])
+})
 
 afterEach(() => {
   vi.restoreAllMocks()

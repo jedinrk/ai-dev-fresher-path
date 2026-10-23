@@ -1,0 +1,7 @@
+{
+  "id": "F5",
+  "concept": "Testing",
+  "predictPrompt": "What do you think a failing automated test actually proves about your code - and what does a passing one NOT prove?",
+  "lesson": "A test is code that checks other code automatically, instead of a human clicking around to check by hand. A failing test proves that a specific, written-down expectation isn't met right now. A passing test proves only that the cases it checks behave as expected - it says nothing about cases nobody wrote a test for. Tests are most useful for catching the moment something that used to work stops working (a regression), not for proving an app is bug-free.",
+  "proveTask": "Write a test that fails, then change the code until it passes. Explain what the test proves, and what it doesn't prove about the rest of the app."
+}

@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import express from 'express';
 import { adminRouter } from './routes/admin.js';
 import { authRouter } from './routes/auth.js';
+import { contentRouter } from './routes/content.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const clientDist = path.join(__dirname, '../../client/dist');
@@ -23,6 +24,7 @@ export function createApp() {
 
   app.use('/api/auth', authRouter);
   app.use('/api/admin', adminRouter);
+  app.use('/api/content', contentRouter);
 
   if (process.env.NODE_ENV === 'production') {
     app.use(express.static(clientDist));

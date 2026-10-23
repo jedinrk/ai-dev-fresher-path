@@ -1,0 +1,7 @@
+{
+  "id": "F8",
+  "concept": "AI agents",
+  "predictPrompt": "Before trying it: what do you think 'plan mode' in an AI coding tool actually checks or prevents, compared to just letting it edit files directly?",
+  "lesson": "An AI coding agent can read files, write code, and run commands on your behalf - which means a wrong assumption can touch a lot of your project before you notice. Plan mode makes the agent propose what it intends to do first, without changing anything, so you can read the plan, catch a wrong assumption, and reject or adjust it before any file changes. The agent drafts; you're the one who decides whether the plan is right.",
+  "proveTask": "Run Claude Code in plan mode on a small change. Reject one plan and explain, in your own words, what was wrong with it."
+}

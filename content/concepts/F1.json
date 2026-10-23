@@ -1,0 +1,7 @@
+{
+  "id": "F1",
+  "concept": "What software is; files, folders, and the terminal",
+  "predictPrompt": "In 1-2 sentences: what do you think a terminal is for, and why would a developer type a command instead of just double-clicking a file?",
+  "lesson": "A program is just a folder of text files containing instructions, organised so related files sit together. The terminal is a text interface to your computer: instead of clicking icons, you type commands. It's faster once you know the commands, it can be scripted and repeated exactly, and almost every developer tool (git, npm, Claude Code) is built to be driven from it. Double-clicking works for opening an app; it doesn't work for 'run the test suite' or 'install these 40 packages'.",
+  "proveTask": "Navigate to the project folder in a terminal and run a command (for example `ls` to list files, or `npm run dev:server`). Be ready to say what the command did."
+}

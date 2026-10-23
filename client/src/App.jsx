@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import AdminPanel from './AdminPanel'
 import { api } from './api'
 import AuthForm from './AuthForm'
+import Concepts from './Concepts'
 
 function App() {
   const [user, setUser] = useState(undefined)
@@ -47,7 +48,6 @@ function App() {
   return (
     <main>
       <h1>Learning App</h1>
-      <p>Server status: {status}</p>
       <p>
         Signed in as {user.name} ({user.email}, {user.role}){' '}
         <button type="button" onClick={handleLogout}>
@@ -64,6 +64,10 @@ function App() {
       )}
 
       {user.role === 'mentor' && showAdmin && <AdminPanel currentUserEmail={user.email} />}
+
+      <Concepts />
+
+      <p>Server status: {status}</p>
     </main>
   )
 }

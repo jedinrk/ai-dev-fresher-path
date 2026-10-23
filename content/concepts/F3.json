@@ -1,0 +1,7 @@
+{
+  "id": "F3",
+  "concept": "Requests, responses, and APIs",
+  "predictPrompt": "When your browser asks a server for data, what do you think comes back, and in what format?",
+  "lesson": "An API is a defined way for one program to ask another for something. The browser sends a request (a method like GET or POST, a URL, sometimes a body) and the server sends back a response: a status code (200 means OK, 404 means not found, 401 means not logged in, and so on) plus a body, usually in JSON - plain text structured as key-value pairs. This app's own `/api/health` route is a tiny example: GET it, and the server responds with `{\"status\": \"ok\"}`.",
+  "proveTask": "Open this app's `/api/health` endpoint directly in the browser (or with curl), look at the response, and explain what the status code and the body mean."
+}

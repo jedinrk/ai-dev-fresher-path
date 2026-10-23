@@ -1,0 +1,7 @@
+{
+  "id": "F6",
+  "concept": "Dependencies and environments",
+  "predictPrompt": "When you run `npm install`, where do you think the files it downloads come from, and what decides which exact versions you get?",
+  "lesson": "Most projects depend on code other people wrote (a dependency), listed in `package.json`. Running `npm install` downloads each one, plus everything those depend on, into a `node_modules` folder - that's why it's never committed to Git, it's rebuilt from the list. A lockfile (`package-lock.json`) pins the exact versions everyone gets, so your setup matches everyone else's. Separately, an 'environment' is the configuration a program runs with - things like a database path or a secret key - kept in a `.env` file that is never committed, because it often holds real secrets.",
+  "proveTask": "Explain in your own words what `npm install` actually did to your project folder. Then find a secret accidentally committed in a sample repo and remove it from Git history, not just the working copy."
+}

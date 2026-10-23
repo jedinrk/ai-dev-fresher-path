@@ -25,4 +25,5 @@ export const api = {
   listUsers: () => request('/api/admin/users'),
   resetUser: (email) =>
     request(`/api/admin/users/${encodeURIComponent(email)}`, { method: 'DELETE' }),
+  listConcepts: () => request('/api/content/concepts'),
 };

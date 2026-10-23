@@ -1,0 +1,7 @@
+{
+  "id": "F2",
+  "concept": "Frontend, backend, database",
+  "predictPrompt": "What do you think happens, step by step, between clicking a button in an app and seeing new data appear on screen?",
+  "lesson": "Most apps have three layers. The frontend is what runs in the browser: the buttons, text, and layout the user sees and clicks. The backend is a server program that receives requests, decides what to do, and enforces rules (like who's allowed to see what). The database is where data is actually stored long-term, so it survives after the server restarts. A click in the frontend sends a request to the backend, which reads or writes the database, then sends a response back for the frontend to display.",
+  "proveTask": "In your To-Do app: change a button label (frontend), add a log line to the server when a request comes in (backend), and find where tasks are actually stored (database)."
+}

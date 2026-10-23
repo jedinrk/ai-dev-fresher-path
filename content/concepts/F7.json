@@ -1,0 +1,7 @@
+{
+  "id": "F7",
+  "concept": "CI/CD",
+  "predictPrompt": "What do you think runs automatically every time code is pushed, and what does it NOT decide for you?",
+  "lesson": "CI (continuous integration) means a server automatically runs your tests and build every time code is pushed, so broken code gets caught before it reaches anyone else. CD (continuous deployment) means that, if those checks pass, the new version can be automatically published. CI/CD does not decide whether a feature is a good idea, whether the code is well designed, or replace a human reviewing the change - it only checks the specific things someone wrote tests for.",
+  "proveTask": "Read a sample CI pipeline file and predict what runs on each push, before checking if you're right. Explain what CI/CD automates, and what it deliberately leaves to a human."
+}

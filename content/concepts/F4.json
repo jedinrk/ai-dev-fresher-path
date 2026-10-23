@@ -1,0 +1,7 @@
+{
+  "id": "F4",
+  "concept": "Version control: Git, branches, commits",
+  "predictPrompt": "Why do you think developers usually don't edit the final code directly on the main branch?",
+  "lesson": "Git records your project's history as a series of commits: named snapshots you can always go back to. A branch is a separate line of work that starts from main, so you can try something without touching the code everyone else relies on. Once the change works and has been reviewed, it gets merged back into main. This means main stays in a state that's always safe to deploy, and a mistake on a branch never breaks it for anyone else.",
+  "proveTask": "Create a branch, make a commit on it, and merge it back. Be ready to explain why commits don't go straight to main."
+}
