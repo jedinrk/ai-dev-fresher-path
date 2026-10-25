@@ -1,4 +1,8 @@
-:443 {
+# Pinned to the droplet's current IP so Caddy knows what to self-sign for.
+# Update this (and re-deploy) if the droplet IP changes, or swap it for a
+# real domain once one is configured, which switches this to a publicly
+# trusted Let's Encrypt certificate automatically.
+168.144.93.253 {
 	tls internal
 	reverse_proxy app:3000
 }
