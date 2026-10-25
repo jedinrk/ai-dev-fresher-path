@@ -1,3 +1,10 @@
+# Browsers never send SNI for a bare IP (it's not a legal SNI value per
+# RFC 6066), so Caddy has nothing to match the ClientHello against unless
+# told what to serve by default. default_sni fixes that.
+{
+	default_sni 168.144.93.253
+}
+
 # Pinned to the droplet's current IP so Caddy knows what to self-sign for.
 # Update this (and re-deploy) if the droplet IP changes, or swap it for a
 # real domain once one is configured, which switches this to a publicly
