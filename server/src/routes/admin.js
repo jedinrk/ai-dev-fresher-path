@@ -1,6 +1,13 @@
 import { Router } from 'express';
+import {
+  countMentors,
+  getAllowlistEntry,
+  listAllowlist,
+  removeAllowlistEntry,
+  upsertAllowlistEntry,
+} from '../auth/allowlist.js';
 import { requireAdmin, requireAuth } from '../auth/middleware.js';
-import { deleteUserByEmail, findUserByEmail, listUsers } from '../auth/users.js';
+import { deleteUserByEmail, findUserByEmail, listUsers, syncUserRole } from '../auth/users.js';
 import { getConcepts } from '../content.js';
 import {
   gateStatusForWeek,
@@ -18,6 +25,8 @@ import {
 import { WEEK_CONCEPTS, WEEKS } from '../weeks.js';
 
 export const adminRouter = Router();
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 adminRouter.use(requireAuth, requireAdmin);
 
@@ -38,6 +47,53 @@ adminRouter.delete('/users/:email', (req, res) => {
   }
 
   deleteUserByEmail(email);
+  res.status(204).end();
+});
+
+adminRouter.get('/allowlist', (req, res) => {
+  res.json(listAllowlist());
+});
+
+adminRouter.post('/allowlist', (req, res) => {
+  const { email, role } = req.body;
+
+  if (!email || !EMAIL_RE.test(email.trim())) {
+    return res.status(400).json({ error: 'a valid email is required' });
+  }
+
+  if (role !== 'mentor' && role !== 'intern') {
+    return res.status(400).json({ error: "role must be 'mentor' or 'intern'" });
+  }
+
+  const normalized = email.trim().toLowerCase();
+  const existing = getAllowlistEntry(normalized);
+
+  if (existing?.role === 'mentor' && role === 'intern' && countMentors() <= 1) {
+    return res.status(400).json({ error: 'cannot demote the last mentor' });
+  }
+
+  const entry = upsertAllowlistEntry(normalized, role);
+  syncUserRole(normalized, role);
+  res.status(existing ? 200 : 201).json(entry);
+});
+
+adminRouter.delete('/allowlist/:email', (req, res) => {
+  const { email } = req.params;
+  const entry = getAllowlistEntry(email);
+
+  if (!entry) {
+    return res.status(404).json({ error: 'no such allowlist entry' });
+  }
+
+  if (entry.email === req.user.email.toLowerCase()) {
+    return res.status(400).json({ error: 'cannot remove your own access' });
+  }
+
+  if (entry.role === 'mentor' && countMentors() <= 1) {
+    return res.status(400).json({ error: 'cannot remove the last mentor' });
+  }
+
+  removeAllowlistEntry(email);
   res.status(204).end();
 });
 

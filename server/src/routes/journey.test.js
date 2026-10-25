@@ -228,7 +228,7 @@ describe("expanded roadmap reviews", () => {
     expect(JSON.stringify(state)).not.toMatch(
       /wrong_flag|wrongFlag|intern@example/,
     );
-    process.env.ALLOWLIST_EMAILS = "mentor@example.com";
+    await mentor.delete("/api/admin/allowlist/intern@example.com");
     expect((await learner.get("/api/journey")).status).toBe(401);
     expect(
       (await learner.post("/api/journey/weeks/1").send(evidence)).status,

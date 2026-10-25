@@ -20,7 +20,7 @@ Read [README](../README.md), [DESIGN](../DESIGN.md), [curriculum reference](CURR
 
 | Surface | Implemented behavior | Important limit |
 | --- | --- | --- |
-| Authentication | Allowlisted self-registration, password login, signed httpOnly session cookie, logout, session-load errors | No public signup, invitations UI or password-recovery email workflow |
+| Authentication | Allowlisted self-registration, password login, signed httpOnly session cookie, logout, session-load errors. Allowlist lives in SQLite and is managed from the mentor admin panel (add/remove/promote); `ALLOWLIST_EMAILS`/`MENTOR_EMAIL` only seed it on first boot. | No public signup, invitations UI or password-recovery email workflow |
 | Today | Actual next unfinished lesson, current week, progress, checkpoint and question context | No artificial streaks, due dates or seeded cohort activity |
 | Roadmap | Four expandable weeks, future previews, lesson links and checkpoint states | No mandatory calendar or server-enforced cross-week order |
 | Lessons | 20 authored lessons; prediction, Learn/Prove stages, hints, code/prompt display, local checklist, completion and contextual questions | Checklist is browser-side self-report; server enforces progression, not task execution |
@@ -182,7 +182,7 @@ Add a learner-detail screen with lesson stages, exact predictions, evidence, fee
 
 ## 6. Verification and release checklist
 
-Automated verification at this handoff: **98 tests passing** (37 client, 61 server), client lint, production build and whitespace checks. Tests cover the full curriculum content rules (checks, hints, by-hand tasks, reading length, weekly load), the check-answer gate, the by-hand lock before the Claude Code task, staged hints, mentor curriculum expansion with checks and feedback, lesson permalinks, unknown lesson recovery, mentor direct lesson preview and learner exclusion from that preview. Unit tests use mocked client APIs; server tests use isolated databases and dedicated allowlisted accounts.
+Automated verification at this handoff: **128 tests passing** (49 client, 79 server), client lint, production build and whitespace checks. Tests cover the full curriculum content rules (checks, hints, by-hand tasks, reading length, weekly load), the check-answer gate, the by-hand lock before the Claude Code task, staged hints, mentor curriculum expansion with checks and feedback, lesson permalinks, unknown lesson recovery, mentor direct lesson preview and learner exclusion from that preview, and the DB-backed allowlist (add/remove/promote, last-mentor protection, live re-check on revoke). Unit tests use mocked client APIs; server tests use isolated databases and dedicated allowlisted accounts.
 
 Earlier local browser checks covered prediction/draft/reload, task completion, contextual question/reply, evidence submission → requested revision → resubmission → sign-off, resource filters, logout, and desktop/tablet/narrow-mobile layouts. Those used synthetic users and in-memory data, not production. Screenshots are local artifacts, not durable test fixtures.
 

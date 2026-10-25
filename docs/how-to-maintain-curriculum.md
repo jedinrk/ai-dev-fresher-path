@@ -5,7 +5,7 @@ Use this guide to review the full syllabus as a mentor, change existing content 
 ## Prerequisites
 
 - A working local app using the [README setup](../README.md#run-locally).
-- An allowlisted mentor account for the browser preview. `MENTOR_EMAIL` must also appear in `ALLOWLIST_EMAILS`; role is assigned at registration and stored in SQLite.
+- An allowlisted mentor account for the browser preview. On a fresh database, `MENTOR_EMAIL` must also appear in `ALLOWLIST_EMAILS` to seed that first mentor; from then on, the allowlist lives in SQLite and is managed from the mentor's admin panel.
 - Repository access for edits. There is currently no browser-based editor or publish API.
 - A separate local database, not a production database, when testing behavior.
 
@@ -83,7 +83,7 @@ Inspect both the mentor curriculum preview and learner lesson flow. Test long ti
 
 | Symptom | Check / action |
 | --- | --- |
-| No Curriculum link | Confirm the account's stored role is `mentor`. Changing `MENTOR_EMAIL` does not automatically rewrite existing users. Use an authorized account-management process; do not bypass the allowlist. |
+| No Curriculum link | Confirm the account's stored role is `mentor`. Promote the email to mentor from the admin panel's allowlist manager; editing `MENTOR_EMAIL` does not rewrite existing users. Do not bypass the allowlist. |
 | Content unchanged after editing | Edit `program.json`, not only `concepts/F*.json`; reload Studio; verify the server/release is using this checkout. |
 | Content fails to load | Validate JSON syntax, check the server error locally, and restore a valid edit before retrying. There is no browser draft/publish safety net yet. |
 | Lesson missing or next link wrong | Check unique IDs, each week's mapping, `lessons` ordering and reference integrity tests. |

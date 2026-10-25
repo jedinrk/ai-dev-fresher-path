@@ -80,9 +80,43 @@ export function getDb() {
       reviewed_at TEXT,
       PRIMARY KEY (user_email, version, week)
     );
+
+    CREATE TABLE IF NOT EXISTS allowlist (
+      email TEXT PRIMARY KEY,
+      role TEXT NOT NULL CHECK (role IN ('mentor', 'intern')),
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 
+  seedAllowlistFromEnvIfEmpty(db);
+
   return db;
+}
+
+// The allowlist used to live only in ALLOWLIST_EMAILS/MENTOR_EMAIL env vars.
+// Those are now just a one-time bootstrap: whoever is in them when the
+// allowlist table is first created gets seeded in, so the first mentor can
+// sign in and manage the allowlist from the admin panel from then on.
+function seedAllowlistFromEnvIfEmpty(database) {
+  const { count } = database.prepare('SELECT COUNT(*) AS count FROM allowlist').get();
+  if (count > 0) return;
+
+  const emails = (process.env.ALLOWLIST_EMAILS || '')
+    .split(',')
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+  if (emails.length === 0) return;
+
+  const mentorEmail = (process.env.MENTOR_EMAIL || '').trim().toLowerCase();
+  const insert = database.prepare(
+    'INSERT OR IGNORE INTO allowlist (email, role) VALUES (?, ?)',
+  );
+  const insertAll = database.transaction((list) => {
+    for (const email of list) {
+      insert.run(email, email === mentorEmail ? 'mentor' : 'intern');
+    }
+  });
+  insertAll(emails);
 }
 
 export function closeDb() {

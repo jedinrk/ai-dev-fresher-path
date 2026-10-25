@@ -25,7 +25,7 @@ Use the Node LTS selected by `.nvmrc`. The verified development runtime for this
 2. Create a **local-only** `.env.local` using the variable names in `.env.example`. Set `PORT=3000`, `NODE_ENV=development`, `DB_PATH=./data/local.db`, a freshly generated `SESSION_SECRET`, and your dedicated local `ALLOWLIST_EMAILS` / `MENTOR_EMAIL`. The mentor email must also be allowlisted. Generate the secret locally with `openssl rand -hex 32`; never paste it into a commit or chat. No DigitalOcean token is required for development. Do not overwrite an existing environment file or point at a production database.
 3. In one terminal run `node --env-file=.env.local --watch server/src/index.js`. In another run `npm run dev:client`. Open the URL Vite prints and create an account using an allowlisted local email.
 
-The npm server scripts expect environment variables to be supplied externally; they do **not** automatically load `.env`. Vite proxies `/api` to port 3000. The first registered account matching `MENTOR_EMAIL` receives the mentor role; role is stored in the user record.
+The npm server scripts expect environment variables to be supplied externally; they do **not** automatically load `.env`. Vite proxies `/api` to port 3000. `ALLOWLIST_EMAILS`/`MENTOR_EMAIL` only seed the allowlist the first time its table is created; after that, add, remove, or promote emails from the mentor's admin panel (Mentor → account administration), which is backed by SQLite, not env vars.
 
 ## Verify changes
 

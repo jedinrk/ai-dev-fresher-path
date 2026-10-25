@@ -28,3 +28,9 @@ export function deleteUserByEmail(email) {
     .run(email.trim().toLowerCase());
   return result.changes > 0;
 }
+
+export function syncUserRole(email, role) {
+  getDb()
+    .prepare('UPDATE users SET role = ? WHERE email = ?')
+    .run(role, email.trim().toLowerCase());
+}

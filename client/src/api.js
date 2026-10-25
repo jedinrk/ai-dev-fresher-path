@@ -44,6 +44,16 @@ export const api = {
     request(`/api/admin/users/${encodeURIComponent(email)}`, {
       method: "DELETE",
     }),
+  listAllowlist: () => request("/api/admin/allowlist"),
+  addAllowlistEntry: (email, role) =>
+    request("/api/admin/allowlist", {
+      method: "POST",
+      body: JSON.stringify({ email, role }),
+    }),
+  removeAllowlistEntry: (email) =>
+    request(`/api/admin/allowlist/${encodeURIComponent(email)}`, {
+      method: "DELETE",
+    }),
   listConcepts: () => request("/api/content/concepts"),
   getProgress: () => request("/api/progress"),
   submitPrediction: (conceptId, text) =>

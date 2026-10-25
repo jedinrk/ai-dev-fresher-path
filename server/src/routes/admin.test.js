@@ -78,6 +78,167 @@ describe("DELETE /api/admin/users/:email", () => {
   });
 });
 
+describe("GET /api/admin/allowlist", () => {
+  it("rejects a request with no session", async () => {
+    const res = await request(app).get("/api/admin/allowlist");
+    expect(res.status).toBe(401);
+  });
+
+  it("rejects a non-mentor user", async () => {
+    const agent = request.agent(app);
+    await registerAndLogin(agent, "intern@example.com", "Intern");
+
+    const res = await agent.get("/api/admin/allowlist");
+    expect(res.status).toBe(403);
+  });
+
+  it("lists the allowlist seeded from env for the mentor", async () => {
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
+
+    const res = await mentorAgent.get("/api/admin/allowlist");
+    expect(res.status).toBe(200);
+    expect(res.body.map((e) => e.email).sort()).toEqual([
+      "intern@example.com",
+      "mentor@example.com",
+    ]);
+  });
+});
+
+describe("POST /api/admin/allowlist", () => {
+  it("adds a new email so it can register", async () => {
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
+
+    const addRes = await mentorAgent
+      .post("/api/admin/allowlist")
+      .send({ email: "newbie@example.com", role: "intern" });
+    expect(addRes.status).toBe(201);
+
+    const registerRes = await request(app).post("/api/auth/register").send({
+      email: "newbie@example.com",
+      name: "Newbie",
+      password: "password123",
+    });
+    expect(registerRes.status).toBe(201);
+  });
+
+  it("rejects an invalid email", async () => {
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
+
+    const res = await mentorAgent
+      .post("/api/admin/allowlist")
+      .send({ email: "not-an-email", role: "intern" });
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects an invalid role", async () => {
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
+
+    const res = await mentorAgent
+      .post("/api/admin/allowlist")
+      .send({ email: "newbie@example.com", role: "admin" });
+    expect(res.status).toBe(400);
+  });
+
+  it("promotes an already-registered user to mentor, granting admin access", async () => {
+    const internAgent = request.agent(app);
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
+
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
+    await mentorAgent
+      .post("/api/admin/allowlist")
+      .send({ email: "intern@example.com", role: "mentor" });
+
+    const res = await internAgent.get("/api/admin/users");
+    expect(res.status).toBe(200);
+  });
+
+  it("refuses to demote the last mentor", async () => {
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
+
+    const res = await mentorAgent
+      .post("/api/admin/allowlist")
+      .send({ email: "mentor@example.com", role: "intern" });
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects a non-mentor", async () => {
+    const internAgent = request.agent(app);
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
+
+    const res = await internAgent
+      .post("/api/admin/allowlist")
+      .send({ email: "newbie@example.com", role: "intern" });
+    expect(res.status).toBe(403);
+  });
+});
+
+describe("DELETE /api/admin/allowlist/:email", () => {
+  it("removes access so the email can no longer use the app", async () => {
+    const internAgent = request.agent(app);
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
+
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
+
+    const deleteRes = await mentorAgent.delete(
+      "/api/admin/allowlist/intern@example.com",
+    );
+    expect(deleteRes.status).toBe(204);
+
+    const res = await internAgent.get("/api/auth/me");
+    expect(res.status).toBe(401);
+  });
+
+  it("404s for an email that isn't on the allowlist", async () => {
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
+
+    const res = await mentorAgent.delete(
+      "/api/admin/allowlist/missing@example.com",
+    );
+    expect(res.status).toBe(404);
+  });
+
+  it("does not let a mentor remove their own access", async () => {
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
+
+    const res = await mentorAgent.delete(
+      "/api/admin/allowlist/mentor@example.com",
+    );
+    expect(res.status).toBe(400);
+  });
+
+  it("lets a mentor remove a co-mentor while another mentor remains", async () => {
+    const mentorAgent = request.agent(app);
+    await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
+    await mentorAgent
+      .post("/api/admin/allowlist")
+      .send({ email: "mentor2@example.com", role: "mentor" });
+
+    const res = await mentorAgent.delete(
+      "/api/admin/allowlist/mentor2@example.com",
+    );
+    expect(res.status).toBe(204);
+  });
+
+  it("rejects a non-mentor", async () => {
+    const internAgent = request.agent(app);
+    await registerAndLogin(internAgent, "intern@example.com", "Intern");
+
+    const res = await internAgent.delete(
+      "/api/admin/allowlist/intern@example.com",
+    );
+    expect(res.status).toBe(403);
+  });
+});
+
 describe("GET /api/admin/checkpoints", () => {
   it("reports week 1 gate as failed until every week 1 lesson is done", async () => {
     const internAgent = request.agent(app);
