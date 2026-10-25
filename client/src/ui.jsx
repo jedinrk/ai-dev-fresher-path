@@ -1,3 +1,5 @@
+import syntreeLogo from "./assets/syntree-logo.png"
+
 export function Icon({ name = "arrow", size = 20, ...props }) {
   const paths = {
     today: (
@@ -80,15 +82,8 @@ export function Icon({ name = "arrow", size = 20, ...props }) {
 
 export function Brand() {
   return (
-    <a className="brand" href="#today" aria-label="First Build home">
-      <span className="brand-mark">
-        <span />
-        <span />
-        <span />
-      </span>
-      <span>
-        first build<span className="brand-dot">.</span>
-      </span>
+    <a className="brand" href="#today" aria-label="Syntree home">
+      <img className="brand-logo" src={syntreeLogo} alt="Syntree" />
     </a>
   )
 }

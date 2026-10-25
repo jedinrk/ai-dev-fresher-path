@@ -1,6 +1,6 @@
 # Mentor curriculum reference
 
-Status: `first-build-v4`, six weeks and thirty-six lessons, authored and implemented on 2026-10-25. This document summarizes the active [program data](../content/program.json). The in-app **Curriculum** view renders that data directly and is the best place to read the full lesson text, checks, and feedback lines.
+Status: `syntree-v1`, six weeks and thirty-six lessons, authored and implemented on 2026-10-25. This document summarizes the active [program data](../content/program.json). The in-app **Curriculum** view renders that data directly and is the best place to read the full lesson text, checks, and feedback lines.
 
 Related: [editing guide](how-to-maintain-curriculum.md), [implementation backlog](HANDOFF.md), [UI/UX standards](../DESIGN.md).
 

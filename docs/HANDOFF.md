@@ -1,4 +1,4 @@
-# First Build: implementation handoff and remaining plan
+# Syntree: implementation handoff and remaining plan
 
 Updated: 2026-10-23. Audience: the next developer/designer and the program mentor. This document describes the local implementation, not a deployed release. No production migration, deployment, push or PR creation is implied by this handoff.
 
@@ -6,7 +6,7 @@ Read [README](../README.md), [DESIGN](../DESIGN.md), [curriculum reference](CURR
 
 ## 1. Product decisions to preserve
 
-- **Name and style:** First Build, in the Builder's Studio direction. Warm, calm and professional, rather than a competitive course dashboard.
+- **Name and style:** Syntree — where learning grows into building. Warm, calm and professional, rather than a competitive course dashboard.
 - **Core teaching loop:** predict in your own words, read a short explanation, do a practical task, then discuss evidence with a mentor.
 - **Program shape:** five weeks, six guided lessons per week, one growing project (Triage, an issue board) plus one real team task in Week 5. Flexible pace; no enforced dates, attendance or streaks. Lesson time is under five hours per week.
 - **Actual work matters:** interns code in their own editor. The web app does not run their code, inspect VS Code, verify tests remotely or automatically assess competency.
@@ -73,6 +73,8 @@ legacy concepts/F1..F8                 v
 | Reflection prompt | Curriculum only | Not a saved journal; final reflection can be supplied in evidence |
 
 The curriculum version moved from `first-build-v1` to `first-build-v2` on 2026-10-24 when the program was redesigned around Triage. Reviews submitted under v1 stay in `journey_reviews` but are not shown as current; lesson progress for F1 to F8 carries over because those IDs kept their concepts. New IDs (S1, A1 to A9, B1 to B3, C1, G1, P1, R1, R3, D2 to D5) start empty for everyone.
+
+The product was renamed from First Build to Syntree on 2026-10-26, and `program.version` moved from `first-build-v4` to `syntree-v1` as part of that. Same rule applies: any reviews submitted under `first-build-v4` stop showing as current, but lesson progress and predictions are unaffected since they're keyed by lesson ID, not version. No real interns had registered yet at the time of this rename, so the practical impact was nil.
 
 `journey_reviews` is created additively by `db.js`. There is no general migration framework. Reviews are versioned, but **lesson progress and predictions are not curriculum-versioned**. Changing only `program.version` does not create an independent cohort curriculum or reset lesson work. A future versioning design must account for both.
 

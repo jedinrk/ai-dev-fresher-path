@@ -1,13 +1,13 @@
-# First Build
+# Syntree
 
-An invitation-only, five-week learning studio for freshers and junior developers. Learners build **Triage**, a small issue board, one layer per week: browser, API and SQLite, tests and CI, a Claude-powered assistant behind a human decision, then Docker and a real team task. Each lesson follows **Predict → Check → Learn → By hand → With Claude Code**; the Claude Code part stays locked until the no-AI task is done. Weekly evidence is reviewed by a mentor at a fixed slot.
+Where learning grows into building. An invitation-only, six-week learning studio for freshers and junior developers — a guided journey from first steps in software engineering to building real applications with AI. Learners build **Triage**, a small issue board, one layer per week: browser, API and SQLite, tests and CI, a Claude-powered assistant behind a human decision, then Docker and a real team task. Each lesson follows **Predict → Check → Learn → By hand → With Claude Code**; the Claude Code part stays locked until the no-AI task is done. Weekly evidence is reviewed by a mentor at a fixed slot.
 
 ## Start here
 
 - [Implementation handoff and remaining plan](docs/HANDOFF.md): current state, prioritized backlog, acceptance criteria, technical constraints, and release checks.
 - [Mentor curriculum reference](docs/CURRICULUM.md): all 30 lessons, the lesson design, weekly expectations, mentor preparation, and remaining content work.
 - [How to maintain the curriculum](docs/how-to-maintain-curriculum.md): mentor preview, content editing, verification, and versioning precautions.
-- [UI/UX standards](DESIGN.md): the Builder's Studio visual language and interaction rules.
+- [UI/UX standards](DESIGN.md): the Syntree visual language and interaction rules.
 - [Content schema and compatibility](content/README.md): active content and preserved foundation records.
 - [Repository working rules](CLAUDE.md): security and development conventions.
 

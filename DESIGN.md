@@ -1,4 +1,4 @@
-# First Build — Builder's Studio
+# Syntree
 
 The interface should feel like a welcoming professional workspace for a first-time developer. The core loop is Predict → Learn → Prove, followed by a weekly project review with a mentor.
 

@@ -1,4 +1,4 @@
-const prefix = "first-build:draft:"
+const prefix = "syntree:draft:"
 export function draftKey(user, lesson) {
   return `${prefix}${user}:${lesson}`
 }

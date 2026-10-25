@@ -1,7 +1,7 @@
 {
-  "version": "first-build-v4",
-  "name": "First Build",
-  "tagline": "Six weeks. Your first real build, explained.",
+  "version": "syntree-v1",
+  "name": "Syntree",
+  "tagline": "Where learning grows into building.",
   "project": {
     "name": "Triage",
     "summary": "A small issue board for a team. Open, In progress, Done. In Week 5 it gains an assistant that suggests labels, and the person decides."
@@ -148,7 +148,7 @@
       "label": "Final feature & handover",
       "description": "Add one last feature to your Triage app, write the document that lets someone else run it, demo it to the team, explain your own code without AI, and write what you learned.",
       "outcome": "Triage finished, documented, and demoed",
-      "milestone": "First build completed",
+      "milestone": "Triage shipped",
       "ids": [
         "L31",
         "L32",

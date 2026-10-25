@@ -69,7 +69,7 @@ export default function App() {
           </div>
           <p className="auth-footer">
             Weekly mentor review <span>·</span> Hands-on learning{" "}
-            <span>·</span> Made for your first build
+            <span>·</span> Where learning grows into building
           </p>
         </section>
         <section className="auth-panel">

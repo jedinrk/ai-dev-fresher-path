@@ -53,7 +53,7 @@ export default function Studio({ user, onLogout, loggingOut }) {
     }
   }, [route])
   useEffect(() => {
-    document.title = `First Build · ${pageLabel}`
+    document.title = `Syntree · ${pageLabel}`
   }, [pageLabel])
   async function refreshJourney() {
     const journey = await api.getJourney()
@@ -113,7 +113,7 @@ export default function Studio({ user, onLogout, loggingOut }) {
       <aside className="sidebar">
         <Brand />
         <div className="program-label">
-          THE BUILDER PROGRAM <span>01</span>
+          THE SYNTREE PROGRAM <span>01</span>
         </div>
         <nav
           aria-label="Main navigation"
@@ -351,7 +351,7 @@ export default function Studio({ user, onLogout, loggingOut }) {
         <footer className="workspace-footer">
           <span>Built on curiosity. Grown through practice.</span>
           <span>
-            FIRST BUILD <span className="footer-spark">✳</span>
+            SYNTREE <span className="footer-spark">✳</span>
           </span>
         </footer>
       </div>

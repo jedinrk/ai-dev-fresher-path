@@ -435,38 +435,13 @@ svg {
   display: flex;
   align-items: center;
   gap: 10px;
-  font:
-    800 25px "Manrope",
-    sans-serif;
-  letter-spacing: -1.3px;
   white-space: nowrap;
   padding: 0 10px;
 }
-.brand-dot {
-  color: #63835c;
-}
-.brand-mark {
-  width: 29px;
+.brand-logo {
   height: 28px;
-  display: flex;
-  gap: 4px;
-  align-items: flex-end;
-  transform: skewY(-8deg);
-}
-.brand-mark span {
+  width: auto;
   display: block;
-  width: 7px;
-  background: #476f4e;
-  border-radius: 1px;
-}
-.brand-mark span:nth-child(1) {
-  height: 15px;
-}
-.brand-mark span:nth-child(2) {
-  height: 27px;
-}
-.brand-mark span:nth-child(3) {
-  height: 20px;
 }
 .program-label {
   display: flex;
@@ -2318,8 +2293,8 @@ td input[type="checkbox"] {
     width: calc(100% - 210px);
     margin-left: 210px;
   }
-  .brand {
-    font-size: 23px;
+  .brand-logo {
+    height: 24px;
   }
   .profile {
     margin: 0 -14px;
@@ -2546,8 +2521,10 @@ td input[type="checkbox"] {
     gap: 15px;
   }
   .brand {
-    font-size: 23px;
     padding: 0;
+  }
+  .brand-logo {
+    height: 22px;
   }
   .program-label,
   .sidebar-progress,
