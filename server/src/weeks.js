@@ -1,8 +1,9 @@
-export const WEEK_CONCEPTS = {
-  1: ['F1', 'F2', 'F3'],
-  2: ['F4', 'F5'],
-  3: ['F6', 'F7'],
-  4: ['F8'],
-};
+import { getProgram } from './content.js';
+
+// Week gates follow the active curriculum, so the admin checkpoint view and
+// the learner journey always agree on which lessons belong to a week.
+export const WEEK_CONCEPTS = Object.fromEntries(
+  getProgram().weeks.map((week) => [week.number, week.ids]),
+);
 
 export const WEEKS = Object.keys(WEEK_CONCEPTS).map(Number);

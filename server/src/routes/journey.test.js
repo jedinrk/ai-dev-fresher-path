@@ -69,7 +69,7 @@ describe("expanded roadmap reviews", () => {
     const state = (await learner.get("/api/journey")).body;
     expect(state.weeks[0]).toMatchObject({
       completed: 0,
-      total: 5,
+      total: getProgram().weeks[0].ids.length,
       ready: false,
       review: null,
     });
@@ -87,29 +87,29 @@ describe("expanded roadmap reviews", () => {
 
   it("enforces prediction and lesson stages on the server", async () => {
     expect(
-      (await learner.post("/api/progress/F1/step").send({ step: "done" }))
+      (await learner.post("/api/progress/L01/step").send({ step: "done" }))
         .status,
     ).toBe(400);
     expect(
-      (await learner.post("/api/progress/F1/step").send({ step: "prove" }))
+      (await learner.post("/api/progress/L01/step").send({ step: "prove" }))
         .status,
     ).toBe(400);
     const text = "  My thought, exactly as written.\n";
-    await learner.post("/api/progress/F1/prediction").send({ text });
+    await learner.post("/api/progress/L01/prediction").send({ text });
     expect(
-      (await learner.post("/api/progress/F1/step").send({ step: "done" }))
+      (await learner.post("/api/progress/L01/step").send({ step: "done" }))
         .status,
     ).toBe(400);
-    expect((await learner.get("/api/progress")).body.predictions.F1).toBe(text);
+    expect((await learner.get("/api/progress")).body.predictions.L01).toBe(text);
     expect(
       (
         await learner
-          .post("/api/progress/F1/prediction")
+          .post("/api/progress/L01/prediction")
           .send({ text: "Replacement" })
       ).status,
     ).toBe(409);
     expect(
-      (await learner.post("/api/progress/F2/prediction").send({ text: {} }))
+      (await learner.post("/api/progress/L02/prediction").send({ text: {} }))
         .status,
     ).toBe(400);
   });
@@ -150,7 +150,7 @@ describe("expanded roadmap reviews", () => {
     ).toBe(409);
     const queue = (await mentor.get("/api/journey/reviews")).body;
     expect(queue[0].weeks[0].review.status).toBe("submitted");
-    expect(queue[0].predictions).toHaveLength(5);
+    expect(queue[0].predictions).toHaveLength(getProgram().weeks[0].ids.length);
     expect(
       (
         await mentor
@@ -203,12 +203,26 @@ describe("expanded roadmap reviews", () => {
     expect(state.weeks[0].ready).toBe(false);
   });
 
+  it("shows the learner's explanations to the mentor alongside predictions", async () => {
+    await learner.post("/api/progress/L12/prediction").send({ text: "Guess." });
+    await learner.post("/api/progress/L12/step").send({ step: "prove" });
+    await learner
+      .post("/api/progress/L12/explanation")
+      .send({ text: "db.js now owns every SQL statement with ? placeholders." });
+    const reviews = (await mentor.get("/api/journey/reviews")).body;
+    const me = reviews.find((r) => r.email === "intern@example.com");
+    expect(me.explanations).toEqual([
+      expect.objectContaining({ concept_id: "L12", text: "db.js now owns every SQL statement with ? placeholders." }),
+    ]);
+    expect((await learner.get("/api/journey/reviews")).status).toBe(403);
+  });
+
   it("keeps mentor-only flags private and rechecks the allowlist", async () => {
     await learner
-      .post("/api/progress/F1/prediction")
+      .post("/api/progress/L01/prediction")
       .send({ text: "My thought." });
     await mentor
-      .patch("/api/admin/predictions/intern@example.com/F1")
+      .patch("/api/admin/predictions/intern@example.com/L01")
       .send({ wrongFlag: true });
     const state = (await learner.get("/api/journey")).body;
     expect(JSON.stringify(state)).not.toMatch(

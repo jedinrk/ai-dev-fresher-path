@@ -13,14 +13,14 @@ Use this guide to review the full syllabus as a mentor, change existing content 
 
 1. Sign in as a mentor and choose **Curriculum**, or open **Mentor workspace → View full curriculum**.
 2. Read the project brief and expected checkpoint evidence for each week. Click **Expand all lessons**, or open one lesson at a time.
-3. Review Predict, Learn, Prove, checklist, hint, reflection and references. Use **Lesson permalink** to share a specific item with another authenticated mentor. D4 must retain its **Explain without AI** instruction.
+3. Review Predict, the checks with their feedback lines, Learn and its examples, the by-hand task, the Claude Code task and starter prompt, the three staged hints, reflection and references. Use **Lesson permalink** to share a specific item with another authenticated mentor. D4 must retain its **Explain without AI** instruction.
 
-Verification: all 20 titles are present across four weeks. Reading content must not require submitting a prediction or clicking a learner completion button. Navigating to an existing `#lesson/<id>` URL as a mentor should also open the inspection view. An intern still uses the learner lesson flow.
+Verification: all 30 titles are present across five weeks. Reading content must not require submitting a prediction or clicking a learner completion button. Navigating to an existing `#lesson/<id>` URL as a mentor should also open the inspection view. An intern still uses the learner lesson flow.
 
 ## Task 2: Edit an existing lesson or reference
 
-1. Open `content/program.json`. Locate the lesson by its stable `id`, not its position in the array. For example, edit F1's `lesson` or `hint`, not its ID.
-2. Update the relevant text. Use plain text, with `\n\n` between lesson paragraphs. Optional `code` is displayed as text in a code block; optional `prompt` is a starter prompt. Do not insert HTML or assume Markdown will render as rich content.
+1. Open `content/program.json`. Locate the lesson by its stable `id`, not its position in the array. For example, edit F1's `lesson` or `hints`, not its ID.
+2. Update the relevant text. Use plain text, with `\n\n` between lesson paragraphs. `examples[].code` is displayed as text in a code block; `withAI.prompt` is a copyable starter prompt. Each check needs exactly one correct option and a feedback line on every option that names what was wrong and why. Keep exactly three hints. Do not insert HTML or assume Markdown will render as rich content.
 3. Check linked resources. Every lesson `resources` entry must match a `resources[].id`. Keep links to primary publishers, describe the useful section/takeaway, and distinguish required from optional material.
 4. If changing a weekly expectation, update the associated `brief`, `deliverables` and affected lessons together. Stop for a migration decision if the new requirement materially changes what an existing approval means.
 5. Run the verification commands below. Refresh the browser to load the changed program, inspect the mentor view, and test the learner presentation with a dedicated test account.
@@ -33,7 +33,7 @@ The server reads program JSON for requests, but an already-open Studio keeps its
 1. Write down which existing learners, predictions, completions and approvals would be affected.
 2. Preserve existing IDs for the same learning concept. Never recycle an old ID for unrelated material. New lessons need unique IDs and explicit placement in a week's `ids`.
 3. Keep `lessons` array order identical to the flattened `weeks[].ids` order. The next-lesson flow uses that ordering. Each lesson should occur exactly once.
-4. Update curriculum/schema tests. Current tests deliberately assert twenty lessons and their mapped order; changing the four-week/twenty-lesson program is a product change, not just fixing a failing test.
+4. Update curriculum/schema tests. Current tests deliberately assert thirty lessons in five weeks, their mapped order, the check and hint rules, a reading length under about five minutes, and at most five hours of lesson time per week; changing those is a product change, not just fixing a failing test.
 5. For material checkpoint changes, design a new version and historical mapping before publishing. `journey_reviews` includes a version; `progress` and `predictions` do not. A version-string bump alone is not a safe migration strategy.
 6. Update the [curriculum reference](CURRICULUM.md) and [handoff](HANDOFF.md) when the documented sequence or scope changes. Do not change legacy `server/src/weeks.js` to match the new program; it preserves old checkpoint meaning.
 
@@ -45,8 +45,9 @@ Verification: compare the old and proposed curriculum by stable ID, inspect exis
 | --- | --- |
 | Program | `version`, `name`, `tagline`, `weeks[]`, `lessons[]`, `resources[]`, `glossary[]` |
 | Week | `number`, `title`, `label`, `description`, `outcome`, `milestone`, ordered `ids[]`, `projectTitle`, `brief`, `deliverables[]` |
-| Lesson | Stable `id`; `title`, `summary`, `kind`, estimated numeric `time`; `predictPrompt`, `lesson`, `proveTask`; `checklist[]`, `hint`, `reflection`, resource-ID `resources[]`; optional `code`, `prompt`, `ai` |
-| AI instruction | Omitted means the default “AI encouraged · your thinking comes first”; D4 explicitly uses `ai: "Explain without AI"` |
+| Lesson | Stable `id`; `title`, `summary`, `kind`, numeric `time`; `predictPrompt`; `checks[]` of `{ question, options[{ text, correct, feedback }] }`; `lesson`; `examples[]` of `{ caption, language, code }`; `byHand { task, checklist[] }`; `withAI { task, prompt?, checklist[] }` or `null`; `hints[]` (three); `reflection`; resource-ID `resources[]`; optional `ai` label |
+| Program extras | `project { name, summary }`, `tools { primary, alsoKnow[] }`, `mentor { reviewSlot, questionResponseTime }` |
+| AI instruction | Omitted means “By hand first · then Claude Code” when `withAI` exists, otherwise “No AI in this lesson”; D4 explicitly uses `ai: "Explain without AI"` with `withAI: null` |
 | Resource | Unique `id`, `title`, `source`, `track`, relevant numeric `weeks[]`, `format`, `url`, `description`, `takeaway`, boolean `required` |
 | Glossary | Array of `[term, definition]` pairs |
 

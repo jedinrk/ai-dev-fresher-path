@@ -142,6 +142,20 @@ export default function Mentor({ program, user }) {
                     <p>{p.text}</p>
                   </div>
                 ))}
+              {(person.explanations || [])
+                .filter((e) => chapter.ids.includes(e.concept_id))
+                .map((e) => (
+                  <div className="review-explanation" key={e.concept_id}>
+                    <strong>
+                      Explained back ·{" "}
+                      {
+                        program.lessons.find((l) => l.id === e.concept_id)
+                          ?.title
+                      }
+                    </strong>
+                    <p>{e.text}</p>
+                  </div>
+                ))}
             </details>
             <label htmlFor={`notes-${key}`}>
               Feedback for {person.name}, week {week}

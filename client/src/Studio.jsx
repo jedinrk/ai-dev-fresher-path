@@ -77,10 +77,19 @@ export default function Studio({ user, onLogout, loggingOut }) {
         ),
       )
   }
+  function updateExplanation(id, text) {
+    setData((prev) => ({
+      ...prev,
+      progress: {
+        ...prev.progress,
+        explanations: { ...prev.progress.explanations, [id]: text },
+      },
+    }))
+  }
   const completed =
     data?.program.lessons.filter((l) => data.progress.steps[l.id] === "done")
       .length || 0
-  const total = data?.program.lessons.length || 20
+  const total = data?.program.lessons.length || 0
   const currentWeek =
     data?.program.weeks.find((w) =>
       w.ids.some((id) => data.progress.steps[id] !== "done"),
@@ -123,7 +132,9 @@ export default function Studio({ user, onLogout, loggingOut }) {
                   ? "Curriculum"
                   : label}
               </span>
-              {key === "roadmap" && <span className="nav-count">4</span>}
+              {key === "roadmap" && data && (
+                <span className="nav-count">{data.program.weeks.length}</span>
+              )}
             </a>
           ))}
           {user.role === "mentor" && (
@@ -147,14 +158,14 @@ export default function Studio({ user, onLogout, loggingOut }) {
                   <span>Program at a glance</span>
                 </div>
                 <p>
-                  {data?.program.weeks.length || 4} weeks · {total} lessons
+                  {data?.program.weeks.length || 0} weeks · {total} lessons
                 </p>
               </>
             ) : (
               <>
                 <div>
                   <span>Your journey</span>
-                  <span>{Math.round((completed / total) * 100)}%</span>
+                  <span>{total ? Math.round((completed / total) * 100) : 0}%</span>
                 </div>
                 <ProgressBar
                   value={completed}
@@ -262,6 +273,7 @@ export default function Studio({ user, onLogout, loggingOut }) {
                     data.program.lessons.find((l) => l.id === detail)?.title
                   }
                   userEmail={user.email}
+                  mentor={data.program.mentor}
                 />
               )}
               {page === "mentor" &&
@@ -294,8 +306,13 @@ export default function Studio({ user, onLogout, loggingOut }) {
                         resources={data.program.resources.filter((r) =>
                           lesson.resources?.includes(r.id),
                         )}
+                        mentor={data.program.mentor}
                         initialStep={data.progress.steps[lesson.id]}
                         initialPrediction={data.progress.predictions[lesson.id]}
+                        initialExplanation={
+                          data.progress.explanations?.[lesson.id]
+                        }
+                        onExplanationChange={updateExplanation}
                         onProgressChange={updateProgress}
                         nextId={
                           data.program.lessons[

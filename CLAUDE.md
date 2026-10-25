@@ -45,8 +45,8 @@ Use the Node version in `.nvmrc` (current LTS). Run `nvm use` before the above c
 
 ## Learning-program rules
 
-- Each concept in `content/` has a prediction prompt, a short lesson, and a prove task.
-- Tasks marked "no AI" must not include AI-generated solutions in the repo.
+- Each lesson in `content/` has a prediction prompt, two or three checks with per-option feedback, a short lesson with examples, a no-AI by-hand task, an optional Claude Code task that unlocks only after the by-hand checklist, and three staged hints. Keep that order: concept before tool.
+- Tasks marked "no AI" and every by-hand task must not include AI-generated solutions in the repo.
 - Predictions are stored as the intern wrote them. Do not edit them.
 - Mentor-only fields (for example, the wrong-prediction flag) must never appear in the intern-facing views.
 

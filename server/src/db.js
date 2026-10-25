@@ -60,6 +60,14 @@ export function getDb() {
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
+    CREATE TABLE IF NOT EXISTS explanations (
+      user_email TEXT NOT NULL,
+      concept_id TEXT NOT NULL,
+      text TEXT NOT NULL,
+      updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+      PRIMARY KEY (user_email, concept_id)
+    );
+
     CREATE TABLE IF NOT EXISTS journey_reviews (
       user_email TEXT NOT NULL,
       version TEXT NOT NULL,

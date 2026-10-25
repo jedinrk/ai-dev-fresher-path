@@ -80,7 +80,7 @@ export default function Project({
       <PageHeading
         eyebrow="YOUR WORK, TAKING SHAPE"
         title="Make something you can explain."
-        description="A real project gives every lesson a purpose. Here’s what you’re working toward."
+        description={`Your project is ${program.project.name}: ${program.project.summary} Each week adds one layer to it.`}
       />
       <nav className="week-tabs" aria-label="Project week">
         {program.weeks.map((w) => (
@@ -113,13 +113,33 @@ export default function Project({
                 </li>
               ))}
             </ul>
-            {week.number === 2 && (
+            {week.ids.some((id) => progress.explanations?.[id]) && (
+              <>
+                <h3>What you explained back this week</h3>
+                {week.ids
+                  .filter((id) => progress.explanations?.[id])
+                  .map((id) => (
+                    <div className="review-explanation" key={id}>
+                      <strong>
+                        {program.lessons.find((l) => l.id === id)?.title}
+                      </strong>
+                      <p>{progress.explanations[id]}</p>
+                    </div>
+                  ))}
+                <p className="small muted">
+                  Your mentor reads these at the review. Bring one up if you
+                  want to talk it through.
+                </p>
+              </>
+            )}
+            {week.number === program.weeks.length && (
               <div className="gentle-note">
                 <Icon name="questions" />
                 <p>
-                  Your specific project and task come from your mentor. Ask for
-                  the repository, setup guide, and acceptance criteria before
-                  you begin.
+                  Your last feature is one of three options in the first
+                  lesson of this week, each with a numbered list of
+                  requirements. Agree your choice with your mentor before you
+                  start building. Report its review status exactly as it is.
                 </p>
               </div>
             )}

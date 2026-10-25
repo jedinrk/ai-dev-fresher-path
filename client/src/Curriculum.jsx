@@ -1,5 +1,7 @@
 import { useState } from "react"
 import { Icon, PageHeading } from "./ui"
+import { lessonParts } from "./lesson"
+import { RichText } from "./richtext"
 
 // An inspection surface, not a learner session: never writes progress or drafts.
 export default function Curriculum({ program, selectedId }) {
@@ -23,16 +25,21 @@ export default function Curriculum({ program, selectedId }) {
       <PageHeading
         eyebrow="MENTOR CURRICULUM · READ-ONLY PREVIEW"
         title="See the whole learning journey."
-        description={`${program.weeks.length} weeks. ${program.lessons.length} lessons. Every prompt, task, and expectation, without completing learner steps.`}
+        description={`${program.weeks.length} weeks. ${program.lessons.length} lessons. Every prompt, check, task, and expectation, without completing learner steps.`}
       />
       <div className="panel curriculum-guide">
         <div>
           <p className="eyebrow">CONTENT SOURCE · {program.version}</p>
           <h2>One curriculum, shared expectations.</h2>
           <p>
-            Review the weekly deliverables with your learners. Lesson checklists
-            are self-reported practice; checkpoint sign-off is your review of
-            their evidence and explanation.
+            Every lesson runs predict, check, learn, a by-hand task with no AI,
+            then the same idea with {program.tools?.primary || "the AI tool"}.
+            Lesson checklists are self-reported practice; checkpoint sign-off
+            is your review of their evidence and explanation
+            {program.mentor?.reviewSlot
+              ? `, every ${program.mentor.reviewSlot}`
+              : ""}
+            .
           </p>
           <p>
             To update content, edit <code>content/program.json</code> in the
@@ -49,7 +56,7 @@ export default function Curriculum({ program, selectedId }) {
       <nav className="curriculum-controls" aria-label="Curriculum navigation">
         {selectedWeek && (
           <a href="#curriculum" className="text-link">
-            ← All four weeks
+            ← All weeks
           </a>
         )}
         <button
@@ -100,6 +107,7 @@ export default function Curriculum({ program, selectedId }) {
           <div className="curriculum-lessons">
             {week.ids.map((id, index) => {
               const lesson = program.lessons.find((item) => item.id === id)
+              const parts = lessonParts(lesson)
               const open = expanded.has(id)
               const resources = program.resources.filter((resource) =>
                 lesson.resources?.includes(resource.id),
@@ -126,41 +134,121 @@ export default function Curriculum({ program, selectedId }) {
                   {open && (
                     <div className="curriculum-content" id={`curriculum-${id}`}>
                       <p className="muted">{lesson.summary}</p>
-                      <p className="badge">
-                        {lesson.ai ||
-                          "AI encouraged · your thinking comes first"}
-                      </p>
-                      <h4>Predict</h4>
-                      <p>{lesson.predictPrompt}</p>
-                      <h4>Learn</h4>
-                      <div className="lesson-prose">
-                        {lesson.lesson.split("\n\n").map((paragraph, i) => (
-                          <p key={i}>{paragraph}</p>
-                        ))}
-                      </div>
-                      {lesson.code && (
-                        <pre>
-                          <code>{lesson.code}</code>
-                        </pre>
-                      )}
-                      {lesson.prompt && (
+                      <p className="badge">{parts.aiLabel}</p>
+                      {lesson.prepare?.length > 0 && (
                         <>
-                          <h4>Starter prompt</h4>
-                          <p className="preserve-lines">{lesson.prompt}</p>
+                          <h4>Before you start</h4>
+                          <ul>
+                            {lesson.prepare.map((item) => (
+                              <li key={item.topic}>
+                                <strong>{item.topic}.</strong> {item.meaning}
+                              </li>
+                            ))}
+                          </ul>
                         </>
                       )}
-                      <h4>Prove</h4>
-                      <p>{lesson.proveTask}</p>
-                      <h4>Practice checklist</h4>
+                      <h4>Predict</h4>
+                      <p>{lesson.predictPrompt}</p>
+                      {parts.checks.length > 0 && (
+                        <>
+                          <h4>Checks</h4>
+                          <ol className="curriculum-checks">
+                            {parts.checks.map((check) => (
+                              <li key={check.question}>
+                                <p>{check.question}</p>
+                                <ul>
+                                  {check.options.map((option) => (
+                                    <li
+                                      key={option.text}
+                                      className={
+                                        option.correct ? "correct" : undefined
+                                      }
+                                    >
+                                      <strong>
+                                        {option.correct ? "Correct: " : ""}
+                                        {option.text}
+                                      </strong>{" "}
+                                      <span className="muted">
+                                        {option.feedback}
+                                      </span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </li>
+                            ))}
+                          </ol>
+                        </>
+                      )}
+                      <h4>Learn</h4>
+                      <RichText className="lesson-prose" text={lesson.lesson} />
+                      {parts.examples.map((example, i) => (
+                        <figure className="lesson-example" key={i}>
+                          {example.caption && (
+                            <figcaption>{example.caption}</figcaption>
+                          )}
+                          <pre>
+                            <code>{example.code}</code>
+                          </pre>
+                        </figure>
+                      ))}
+                      {lesson.keyReading && (
+                        <p className="small muted">
+                          Read this now:{" "}
+                          {
+                            program.resources.find(
+                              (r) => r.id === lesson.keyReading.resource,
+                            )?.title
+                          }
+                        </p>
+                      )}
+                      {lesson.widgets?.length > 0 && (
+                        <p className="small muted">
+                          Interactive:{" "}
+                          {lesson.widgets.map((w) => w.title).join(" · ")}
+                        </p>
+                      )}
+                      <h4>By hand, no AI</h4>
+                      <RichText text={parts.byHand.task} />
                       <ul>
-                        {lesson.checklist.map((item) => (
+                        {parts.byHand.checklist.map((item) => (
                           <li key={item}>{item}</li>
                         ))}
                       </ul>
-                      {lesson.hint && (
+                      {parts.withAI && (
                         <>
-                          <h4>Hint</h4>
-                          <p>{lesson.hint}</p>
+                          <h4>With {program.tools?.primary || "AI"}</h4>
+                          {parts.withAI.task && (
+                            <RichText text={parts.withAI.task} />
+                          )}
+                          {parts.withAI.prompt && (
+                            <>
+                              <h5>Starter prompt</h5>
+                              <p className="preserve-lines">
+                                {parts.withAI.prompt}
+                              </p>
+                            </>
+                          )}
+                          <ul>
+                            {parts.withAI.checklist.map((item) => (
+                              <li key={item}>{item}</li>
+                            ))}
+                          </ul>
+                          {lesson.explainBack && (
+                            <>
+                              <h5>Explain it back</h5>
+                              <RichText text={lesson.explainBack.prompt} />
+                            </>
+                          )}
+                        </>
+                      )}
+                      {parts.hints.length > 0 && (
+                        <>
+                          <h4>Staged hints</h4>
+                          <ol>
+                            {parts.hints.map((hint) => (
+                              <li key={hint}>{hint}</li>
+                            ))}
+                          </ol>
                         </>
                       )}
                       {lesson.reflection && (

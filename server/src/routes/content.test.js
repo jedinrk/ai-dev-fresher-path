@@ -29,6 +29,6 @@ describe("GET /api/content/concepts", () => {
     const res = await agent.get("/api/content/concepts");
 
     expect(res.status).toBe(200);
-    expect(res.body).toHaveLength(20);
+    expect(res.body).toHaveLength(36);
   });
 });

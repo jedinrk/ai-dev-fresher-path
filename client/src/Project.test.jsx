@@ -28,7 +28,11 @@ describe("project checkpoint", () => {
     expect(
       screen.getByRole("button", { name: "Request mentor review" }),
     ).toBeDisabled()
-    expect(screen.getByText(/5 remaining lessons/)).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        new RegExp(`${program.weeks[0].ids.length} remaining lessons`),
+      ),
+    ).toBeInTheDocument()
   })
   it("retains evidence after a failed save and submits successfully on retry", async () => {
     api.submitCheckpoint

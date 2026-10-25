@@ -60,6 +60,23 @@ export function getPredictionsForUser(userEmail) {
     .all(userEmail);
 }
 
+export function getExplanationsForUser(userEmail) {
+  return getDb()
+    .prepare('SELECT concept_id, text, updated_at FROM explanations WHERE user_email = ?')
+    .all(userEmail);
+}
+
+export function saveExplanation(userEmail, conceptId, text) {
+  getDb()
+    .prepare(
+      `INSERT INTO explanations (user_email, concept_id, text, updated_at)
+       VALUES (?, ?, ?, datetime('now'))
+       ON CONFLICT (user_email, concept_id)
+       DO UPDATE SET text = excluded.text, updated_at = excluded.updated_at`,
+    )
+    .run(userEmail, conceptId, text);
+}
+
 export function gateStatusForWeek(userEmail, week) {
   const conceptIds = WEEK_CONCEPTS[week] || [];
   const progress = getProgressForUser(userEmail);

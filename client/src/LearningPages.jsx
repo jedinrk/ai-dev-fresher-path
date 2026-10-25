@@ -15,6 +15,9 @@ export function Today({ program, progress, journey, currentWeek, user }) {
   const completed = program.lessons.filter(
     (l) => progress.steps[l.id] === "done",
   ).length
+  const weekDone = currentWeek.ids.filter(
+    (id) => progress.steps[id] === "done",
+  ).length
   const [questions, setQuestions] = useState(null)
   const [questionError, setQuestionError] = useState(false)
   useEffect(() => {
@@ -45,13 +48,17 @@ export function Today({ program, progress, journey, currentWeek, user }) {
           </p>
           <div className="hero-meta">
             <span>
-              <Icon name="roadmap" size={16} /> 4 weeks
+              <Icon name="roadmap" size={16} /> {program.weeks.length} weeks
             </span>
             <i />
-            <span>20 hands-on lessons</span>
+            <span>{program.lessons.length} hands-on lessons</span>
             <i />
-            <span>Your first contribution</span>
+            <span>One project: {program.project.name}</span>
           </div>
+          <p className="project-intro">
+            <strong>Your project is {program.project.name}.</strong>{" "}
+            {program.project.summary}
+          </p>
         </div>
         <BuildIllustration />
       </section>
@@ -59,10 +66,10 @@ export function Today({ program, progress, journey, currentWeek, user }) {
         <section className="next-card">
           <div className="card-topline">
             <span className="eyebrow light">
-              {next ? "YOUR NEXT SMALL STEP" : "LOOK HOW FAR YOU’VE COME"}
+              {next ? "YOUR NEXT LESSON" : "LOOK HOW FAR YOU’VE COME"}
             </span>
             <span className="dark-badge">
-              WEEK {next ? currentWeek.number : 4}
+              WEEK {next ? currentWeek.number : program.weeks.length}
             </span>
           </div>
           <div className="next-card-body">
@@ -93,7 +100,7 @@ export function Today({ program, progress, journey, currentWeek, user }) {
               href={
                 next
                   ? `#lesson/${next.id}`
-                  : `#project/${nextReview?.week || 4}`
+                  : `#project/${nextReview?.week || program.weeks.length}`
               }
             >
               {next
@@ -108,16 +115,26 @@ export function Today({ program, progress, journey, currentWeek, user }) {
         <section className="outcome-card">
           <div className="section-eyebrow">
             <Icon name="flag" size={18} />
-            <span>THIS WEEK’S DESTINATION</span>
+            <span>THIS WEEK’S GOAL · WEEK {currentWeek.number}</span>
           </div>
           <h2>{currentWeek.outcome}</h2>
           <p>{currentWeek.description}</p>
+          <div className="week-goal-progress">
+            <ProgressBar
+              value={weekDone}
+              total={currentWeek.ids.length}
+              label={`Week ${currentWeek.number} progress`}
+            />
+            <span>
+              {weekDone} of {currentWeek.ids.length} lessons done this week
+            </span>
+          </div>
           <div className="outcome-bottom">
             <span className="small muted">
-              Learning + making + a mentor check-in
+              Finish the lessons, then your mentor reviews the week.
             </span>
             <a href={`#project/${currentWeek.number}`} className="text-link">
-              Explore the project <Icon name="arrow" size={16} />
+              Read the week’s brief <Icon name="arrow" size={16} />
             </a>
           </div>
         </section>
@@ -126,53 +143,64 @@ export function Today({ program, progress, journey, currentWeek, user }) {
         <div className="section-heading">
           <div>
             <p className="eyebrow">THE BIG PICTURE</p>
-            <h2>Your path from here.</h2>
+            <h2>
+              Week {currentWeek.number} of {program.weeks.length} ·{" "}
+              {completed} of {program.lessons.length} lessons done
+            </h2>
           </div>
           <a href="#roadmap" className="text-link">
             View full roadmap <Icon name="arrow" size={16} />
           </a>
         </div>
-        <div className="week-cards">
+        <ol className="week-steps">
           {program.weeks.map((week) => {
             const count = week.ids.filter(
               (id) => progress.steps[id] === "done",
             ).length
             const active = week.number === currentWeek.number
             const state = journey.weeks.find((w) => w.week === week.number)
+            const complete = count === week.ids.length
+            const status =
+              state?.review?.status === "approved"
+                ? "Signed off"
+                : active
+                  ? "You are here"
+                  : complete
+                    ? "Awaiting review"
+                    : "Later"
+            const tone =
+              status === "Signed off" || status === "You are here"
+                ? "badge-green"
+                : status === "Awaiting review"
+                  ? "badge-gold"
+                  : "badge-neutral"
             return (
-              <a
-                className={`week-card ${active ? "current" : ""}`}
+              <li
                 key={week.number}
-                href={`#project/${week.number}`}
+                className={
+                  active ? "current" : complete ? "complete" : "later"
+                }
               >
-                <div className="week-card-top">
-                  <span className="week-number">0{week.number}</span>
-                  {state?.review?.status === "approved" ? (
-                    <span className="badge badge-green">Signed off</span>
-                  ) : active ? (
-                    <span className="badge badge-green">You are here</span>
-                  ) : (
-                    <Icon name="arrow" size={17} />
-                  )}
-                </div>
-                <p className="eyebrow">
-                  WEEK {week.number} · {week.label}
-                </p>
-                <h3>{week.title}</h3>
-                <div className="week-card-progress">
-                  <ProgressBar
-                    value={count}
-                    total={week.ids.length}
-                    label={`Week ${week.number} progress`}
-                  />
-                  <span>
-                    {count}/{week.ids.length} lessons
+                <a href={`#project/${week.number}`}>
+                  <span className="week-step-number" aria-hidden="true">
+                    {complete && !active ? (
+                      <Icon name="check" size={14} />
+                    ) : (
+                      week.number
+                    )}
                   </span>
-                </div>
-              </a>
+                  <span className="week-step-body">
+                    <strong>{week.title}</strong>
+                    <small>
+                      Week {week.number} · {count}/{week.ids.length} lessons
+                    </small>
+                  </span>
+                  <span className={`badge ${tone}`}>{status}</span>
+                </a>
+              </li>
             )
           })}
-        </div>
+        </ol>
       </section>
       <div className="bottom-grid">
         <section className="mentor-note">
@@ -214,6 +242,18 @@ export function Today({ program, progress, journey, currentWeek, user }) {
                 ? "Your mentor has shared feedback in Questions."
                 : "Bring your questions, experiments, and “I’m not sure yet.”"}
           </p>
+          {program.mentor && (
+            <dl className="mentor-rhythm">
+              <div>
+                <dt>Weekly review</dt>
+                <dd>{program.mentor.reviewSlot}</dd>
+              </div>
+              <div>
+                <dt>Question replies</dt>
+                <dd>{program.mentor.questionResponseTime}</dd>
+              </div>
+            </dl>
+          )}
           <a className="text-link" href="#questions">
             {answered.length ? "Read your answers" : "Open your question log"}
             <Icon name="arrow" size={16} />
@@ -232,13 +272,13 @@ export function Roadmap({ program, progress, journey, currentWeek }) {
   return (
     <>
       <PageHeading
-        eyebrow="YOUR FOUR-WEEK JOURNEY"
+        eyebrow={`YOUR ${program.weeks.length}-WEEK JOURNEY`}
         title="From first command to first contribution."
         description="Explore the whole path. Take it one useful step at a time."
       />
       <div className="roadmap-intro">
         <span>
-          <Icon name="roadmap" /> 4 chapters{" "}
+          <Icon name="roadmap" /> {program.weeks.length} chapters{" "}
           <span className="separator">/</span> {program.lessons.length}{" "}
           practical lessons
         </span>

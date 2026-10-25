@@ -12,9 +12,9 @@ The interface should feel like a welcoming professional workspace for a first-ti
 
 ## Screens
 
-- Today: the actual next unfinished lesson, weekly destination, four-week overview, and question-log status.
+- Today: the actual next unfinished lesson, weekly destination, five-week overview, question-log status, and the mentor's review slot and reply promise.
 - My roadmap: expandable weeks with lesson links, completion states, and project checkpoints. Future weeks remain explorable.
-- Lesson: short explanations, practice checklists, copyable prompts, contextual help, and safe save/retry behavior.
+- Lesson: prediction, self-checks with instant per-option feedback, a short explanation with captioned examples, a by-hand no-AI task, a Claude Code task that unlocks after it, three staged hints, contextual help, and safe save/retry behavior.
 - My project: project brief, deliverables, evidence submission, revision feedback, and sign-off. A mentor previews learner pages but cannot submit to their own review queue.
 - Resources: search, topic/week filtering, primary-source links, and a small glossary.
 - Questions: contextual drafts and a persistent conversation log.

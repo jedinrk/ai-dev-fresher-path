@@ -56,6 +56,11 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ step }),
     }),
+  saveExplanation: (conceptId, text) =>
+    request(`/api/progress/${encodeURIComponent(conceptId)}/explanation`, {
+      method: "POST",
+      body: JSON.stringify({ text }),
+    }),
   listCheckpoints: () => request("/api/admin/checkpoints"),
   signOffCheckpoint: (email, week, notes) =>
     request(`/api/admin/checkpoints/${encodeURIComponent(email)}/${week}`, {

@@ -3,7 +3,11 @@ import { requireAuth, requireAdmin } from "../auth/middleware.js";
 import { findUserByEmail, listUsers } from "../auth/users.js";
 import { getProgram } from "../content.js";
 import { getDb } from "../db.js";
-import { getProgressForUser, getPredictionsForUser } from "../progress.js";
+import {
+  getExplanationsForUser,
+  getPredictionsForUser,
+  getProgressForUser,
+} from "../progress.js";
 
 export const journeyRouter = Router();
 journeyRouter.use(requireAuth);
@@ -132,6 +136,7 @@ journeyRouter.get("/reviews", requireAdmin, (req, res) => {
         name: user.name,
         weeks: weeksFor(user.email),
         predictions: getPredictionsForUser(user.email),
+        explanations: getExplanationsForUser(user.email),
       })),
   );
 });

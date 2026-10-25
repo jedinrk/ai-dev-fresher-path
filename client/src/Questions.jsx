@@ -3,7 +3,7 @@ import { api } from "./api"
 import { Icon, PageHeading } from "./ui"
 import { draftKey, readDraft, saveDraft, removeDraft } from "./drafts"
 
-export default function Questions({ context, userEmail }) {
+export default function Questions({ context, userEmail, mentor }) {
   const key = userEmail
     ? draftKey(userEmail, `question-${context || "general"}`)
     : null
@@ -123,6 +123,16 @@ export default function Questions({ context, userEmail }) {
             If you’ve been stuck for about 20 minutes, ask for help. Learning to
             get unstuck is a skill, too.
           </p>
+          {mentor && (
+            <>
+              <div className="aside-divider" />
+              <p className="eyebrow">WHEN TO EXPECT A REPLY</p>
+              <p>{mentor.questionResponseTime}</p>
+              <p className="small muted">
+                Weekly review: {mentor.reviewSlot}.
+              </p>
+            </>
+          )}
           <div className="aside-divider" />
           <p className="eyebrow">TRY INCLUDING</p>
           <ol>

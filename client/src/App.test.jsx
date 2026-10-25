@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import App from "./App"
 import { api } from "./api"
 import program from "../../content/program.json"
+import { plainText } from "./plaintext"
 
 vi.mock("./api", () => ({
   api: {
@@ -20,6 +21,7 @@ vi.mock("./api", () => ({
     listCheckpoints: vi.fn(),
     getMyQuestions: vi.fn(),
     askQuestion: vi.fn(),
+    saveExplanation: vi.fn(),
   },
 }))
 
@@ -55,7 +57,7 @@ function mockHealthFetch() {
 
 describe("App", () => {
   it("opens the complete mentor lesson preview without a prediction gate", async () => {
-    window.location.hash = "lesson/D4"
+    window.location.hash = "lesson/L35"
     api.me.mockResolvedValue({
       email: "mentor@example.com",
       name: "Mentor",
@@ -64,7 +66,7 @@ describe("App", () => {
     render(<App />)
     expect(
       await screen.findByText(
-        program.lessons.find((lesson) => lesson.id === "D4").proveTask,
+        plainText(program.lessons.find((lesson) => lesson.id === "L35").byHand.task),
       ),
     ).toBeInTheDocument()
     expect(screen.getByRole("link", { name: /curriculum/i })).toHaveAttribute(
@@ -97,7 +99,11 @@ describe("App", () => {
       screen.queryByRole("link", { name: /^curriculum/i }),
     ).not.toBeInTheDocument()
     expect(
-      screen.queryByText(program.lessons[0].proveTask),
+      screen.queryByText(
+        (_, el) =>
+          el.tagName === "P" &&
+          el.textContent === plainText(program.lessons[0].byHand.task),
+      ),
     ).not.toBeInTheDocument()
   })
 

@@ -68,8 +68,8 @@ export default function App() {
             <BuildIllustration />
           </div>
           <p className="auth-footer">
-            4 weeks <span>·</span> Hands-on learning <span>·</span> Made for
-            your first build
+            Weekly mentor review <span>·</span> Hands-on learning{" "}
+            <span>·</span> Made for your first build
           </p>
         </section>
         <section className="auth-panel">

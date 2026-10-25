@@ -9,17 +9,17 @@ describe("learning navigation", () => {
     render(<Resources program={program} />)
     await userEvent.click(screen.getByRole("button", { name: "Generative AI" }))
     expect(
-      screen.getByRole("heading", { name: "Set up your AI coding partner" }),
+      screen.getByRole("heading", { name: "Claude Code overview" }),
     ).toBeInTheDocument()
     expect(
       screen.queryByRole("heading", { name: "Install Node.js" }),
     ).not.toBeInTheDocument()
-    await userEvent.selectOptions(screen.getByRole("combobox"), "4")
+    await userEvent.selectOptions(screen.getByRole("combobox"), "6")
     expect(screen.getByText("No references found.")).toBeInTheDocument()
     await userEvent.click(screen.getByRole("button", { name: "Clear filters" }))
-    await userEvent.type(screen.getByRole("searchbox"), "React")
+    await userEvent.type(screen.getByRole("searchbox"), "Docker")
     expect(
-      screen.getByRole("heading", { name: "React, one component at a time" }),
+      screen.getByRole("heading", { name: "Docker: get started" }),
     ).toBeInTheDocument()
     expect(
       screen.queryByRole("heading", { name: "Install Node.js" }),
@@ -30,22 +30,20 @@ describe("learning navigation", () => {
     render(
       <Roadmap
         program={program}
-        progress={{ steps: { F1: "done" } }}
+        progress={{ steps: { L01: "done" } }}
         journey={{ weeks: [] }}
         currentWeek={program.weeks[0]}
       />,
     )
     expect(
-      screen.getByRole("link", { name: /meet your workspace/i }),
-    ).toHaveAttribute("href", "#lesson/F1")
-    await userEvent.click(
-      screen.getByRole("button", { name: /finish and tell your story/i }),
-    )
+      screen.getByRole("link", { name: /install and verify/i }),
+    ).toHaveAttribute("href", "#lesson/L01")
+    await userEvent.click(screen.getByRole("button", { name: /finish your triage/i }))
     expect(
-      screen.getByRole("link", { name: /leave a useful handover/i }),
-    ).toHaveAttribute("href", "#lesson/D2")
+      screen.getByRole("link", { name: /write the handover document/i }),
+    ).toHaveAttribute("href", "#lesson/L33")
     expect(
-      screen.queryByRole("link", { name: /meet your workspace/i }),
+      screen.queryByRole("link", { name: /install and verify/i }),
     ).not.toBeInTheDocument()
   })
 })

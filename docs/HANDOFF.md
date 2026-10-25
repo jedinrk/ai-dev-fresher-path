@@ -8,9 +8,10 @@ Read [README](../README.md), [DESIGN](../DESIGN.md), [curriculum reference](CURR
 
 - **Name and style:** First Build, in the Builder's Studio direction. Warm, calm and professional, rather than a competitive course dashboard.
 - **Core teaching loop:** predict in your own words, read a short explanation, do a practical task, then discuss evidence with a mentor.
-- **Program shape:** four weeks, five guided lessons per week. Flexible pace; no enforced dates, attendance or streaks.
+- **Program shape:** five weeks, six guided lessons per week, one growing project (Triage, an issue board) plus one real team task in Week 5. Flexible pace; no enforced dates, attendance or streaks. Lesson time is under five hours per week.
 - **Actual work matters:** interns code in their own editor. The web app does not run their code, inspect VS Code, verify tests remotely or automatically assess competency.
-- **AI from the beginning:** Cline is introduced in Week 1. Guidance emphasizes context, reviewing plans/diffs, checking outputs and protecting secrets. D4 requires independent explanation without AI.
+- **Concept before tool:** every lesson is predict → checks with instant feedback → learn → a no-AI by-hand task → the same idea with Claude Code, which stays locked until the by-hand checklist is complete. Claude Code is the primary tool from Week 1; Cursor and Codex appear once as a comparison. D4 requires independent explanation without AI.
+- **Mentor rhythm is content:** the weekly review slot and the question-log reply promise live in `program.json` under `mentor` and are displayed on Today, Questions and lesson pages.
 - **Single content source:** `content/program.json`. Do not duplicate lesson prose in React or create a second independently maintained syllabus inside the UI.
 - **Progress versus approval:** lesson completion and mentor checkpoint approval are distinct states. All week's lessons must be done before an intern can submit a checkpoint.
 - **Existing users matter:** original foundation IDs, predictions and completion survive. Old weekly approvals are not reinterpreted as approvals of the new project requirements.
@@ -71,6 +72,8 @@ legacy concepts/F1..F8                 v
 | Unsubmitted work | Browser localStorage, account-scoped | Predictions, checklist choices, questions, evidence; cleared on logout; not cross-device |
 | Reflection prompt | Curriculum only | Not a saved journal; final reflection can be supplied in evidence |
 
+The curriculum version moved from `first-build-v1` to `first-build-v2` on 2026-10-24 when the program was redesigned around Triage. Reviews submitted under v1 stay in `journey_reviews` but are not shown as current; lesson progress for F1 to F8 carries over because those IDs kept their concepts. New IDs (S1, A1 to A9, B1 to B3, C1, G1, P1, R1, R3, D2 to D5) start empty for everyone.
+
 `journey_reviews` is created additively by `db.js`. There is no general migration framework. Reviews are versioned, but **lesson progress and predictions are not curriculum-versioned**. Changing only `program.version` does not create an independent cohort curriculum or reset lesson work. A future versioning design must account for both.
 
 Original F1–F8 IDs still refer to existing user history even though lesson prose/order changed. Do not claim historical completion proves every new task was performed. Mentors should reconcile older cohorts explicitly; do not erase records or manufacture approvals.
@@ -97,7 +100,7 @@ These are proposed follow-ups with acceptance criteria. They are not all approve
 
 **Why:** the core experience works; learning usefulness still needs real interns and mentor review.
 
-- Walk all 20 lessons using the mentor curriculum preview and record feedback by stable ID.
+- Walk all 30 lessons using the mentor curriculum preview and record feedback by stable ID, including the wording of every check feedback line.
 - Confirm setup permissions, approved AI access, starter-app storage scope, weekly evidence expectations and available mentor time.
 - Reconcile the source PDF's video/resource inventory and missing prompting guide. Do not invent titles or URLs.
 - Add the pre-pilot content packages listed in [CURRICULUM](CURRICULUM.md#remaining-content-planned).
@@ -149,7 +152,7 @@ Add a learner-detail screen with lesson stages, exact predictions, evidence, fee
 - Format filtering for resources if the inventory grows; preserve combined-filter empty/reset behavior.
 - Better inline glossary explanations where a real novice needs them.
 - Optional server-saved reflection journal, only after deciding learner privacy and mentor visibility. Do not label a prompt as saved until persistence exists.
-- Completion summary based on actual approved checkpoints, not just twenty clicked lessons. Keep pending approvals visible.
+- Completion summary based on actual approved checkpoints, not just thirty clicked lessons. Keep pending approvals visible.
 
 **Acceptance:** existing content renders when optional fields are absent; optional work never blocks the required path; failure and empty states are designed; no invented achievements or automated competency claims.
 
@@ -179,11 +182,11 @@ Add a learner-detail screen with lesson stages, exact predictions, evidence, fee
 
 ## 6. Verification and release checklist
 
-Automated verification at this handoff: **91 tests passing** (34 client, 57 server), client lint, production build and whitespace checks. New tests cover full curriculum content, expansion, lesson permalinks, unknown lesson recovery, mentor direct lesson preview and learner exclusion from that preview. Unit tests use mocked client APIs; server tests use isolated databases and dedicated allowlisted accounts.
+Automated verification at this handoff: **98 tests passing** (37 client, 61 server), client lint, production build and whitespace checks. Tests cover the full curriculum content rules (checks, hints, by-hand tasks, reading length, weekly load), the check-answer gate, the by-hand lock before the Claude Code task, staged hints, mentor curriculum expansion with checks and feedback, lesson permalinks, unknown lesson recovery, mentor direct lesson preview and learner exclusion from that preview. Unit tests use mocked client APIs; server tests use isolated databases and dedicated allowlisted accounts.
 
 Earlier local browser checks covered prediction/draft/reload, task completion, contextual question/reply, evidence submission → requested revision → resubmission → sign-off, resource filters, logout, and desktop/tablet/narrow-mobile layouts. Those used synthetic users and in-memory data, not production. Screenshots are local artifacts, not durable test fixtures.
 
-The mentor-preview follow-up was also checked in the local browser: all 20 lessons expanded, a late-lesson permalink showed its full task, no learner forms or progress writes were emitted, and the final mobile navigation kept all six destinations visible. The 320px layout and targeted text-contrast checks passed; the authenticated preview had no console errors. A pre-login 401 during fixture setup was expected, not a failed authenticated request.
+The earlier mentor-preview follow-up was checked in the local browser on the v1 content: all lessons expanded, a late-lesson permalink showed its full task, no learner forms or progress writes were emitted, and the final mobile navigation kept all six destinations visible. The 320px layout and targeted text-contrast checks passed; the authenticated preview had no console errors. A pre-login 401 during fixture setup was expected, not a failed authenticated request.
 
 Before each release:
 
@@ -214,4 +217,4 @@ These do not block running the current app. Resolve them before the relevant fol
 
 ## 8. Suggested first task for the next contributor
 
-Read the four entry-point documents, run tests, sign in with a dedicated local mentor, and inspect all four weeks. Pick **one** P0 content improvement with the mentor, update `program.json`, preview it in Curriculum, test it as a learner, and add a regression test. Keep the existing design and stable IDs. Do not begin by rebuilding the shell or installing a new UI framework.
+Read the four entry-point documents, run tests under the Node version in `.nvmrc` (the native SQLite module is built for it), sign in with a dedicated local mentor, and inspect all five weeks. Pick **one** P0 content improvement with the mentor, update `program.json`, preview it in Curriculum, test it as a learner, and add a regression test. Keep the existing design and stable IDs. Do not begin by rebuilding the shell or installing a new UI framework.

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import request from "supertest";
 import { createApp } from "../app.js";
+import { WEEK_CONCEPTS } from "../weeks.js";
 import { resetTestEnv } from "../testUtils.js";
 
 let app;
@@ -78,14 +79,14 @@ describe("DELETE /api/admin/users/:email", () => {
 });
 
 describe("GET /api/admin/checkpoints", () => {
-  it("reports week 1 gate as failed until F1-F3 are all done", async () => {
+  it("reports week 1 gate as failed until every week 1 lesson is done", async () => {
     const internAgent = request.agent(app);
     await registerAndLogin(internAgent, "intern@example.com", "Intern");
     await internAgent
-      .post("/api/progress/F1/prediction")
+      .post("/api/progress/L01/prediction")
       .send({ text: "Guess." });
-    await internAgent.post("/api/progress/F1/step").send({ step: "prove" });
-    await internAgent.post("/api/progress/F1/step").send({ step: "done" });
+    await internAgent.post("/api/progress/L01/step").send({ step: "prove" });
+    await internAgent.post("/api/progress/L01/step").send({ step: "done" });
 
     const mentorAgent = request.agent(app);
     await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
@@ -99,10 +100,10 @@ describe("GET /api/admin/checkpoints", () => {
     expect(week1.signedOffAt).toBeNull();
   });
 
-  it("reports week 1 gate as passed once F1-F3 are all done", async () => {
+  it("reports week 1 gate as passed once every week 1 lesson is done", async () => {
     const internAgent = request.agent(app);
     await registerAndLogin(internAgent, "intern@example.com", "Intern");
-    for (const conceptId of ["F1", "F2", "F3"]) {
+    for (const conceptId of WEEK_CONCEPTS[1]) {
       await internAgent
         .post(`/api/progress/${conceptId}/prediction`)
         .send({ text: "Guess." });
@@ -135,7 +136,7 @@ describe("GET /api/admin/checkpoints", () => {
     const internAgent = request.agent(app);
     await registerAndLogin(internAgent, "intern@example.com", "Intern");
     await internAgent
-      .post("/api/progress/F1/prediction")
+      .post("/api/progress/L01/prediction")
       .send({ text: "A terminal runs commands." });
 
     const mentorAgent = request.agent(app);
@@ -148,8 +149,8 @@ describe("GET /api/admin/checkpoints", () => {
 
     expect(week1.predictions).toEqual([
       {
-        conceptId: "F1",
-        concept: "What software is; files, folders, and the terminal",
+        conceptId: "L01",
+        concept: "Install and verify",
         text: "A terminal runs commands.",
         wrongFlag: false,
       },
@@ -174,7 +175,7 @@ describe("POST /api/admin/checkpoints/:email/:week", () => {
   it("signs off once the gate is passed", async () => {
     const internAgent = request.agent(app);
     await registerAndLogin(internAgent, "intern@example.com", "Intern");
-    for (const conceptId of ["F1", "F2", "F3"]) {
+    for (const conceptId of WEEK_CONCEPTS[1]) {
       await internAgent
         .post(`/api/progress/${conceptId}/prediction`)
         .send({ text: "Guess." });
@@ -218,14 +219,14 @@ describe("PATCH /api/admin/predictions/:email/:conceptId", () => {
     const internAgent = request.agent(app);
     await registerAndLogin(internAgent, "intern@example.com", "Intern");
     await internAgent
-      .post("/api/progress/F1/prediction")
+      .post("/api/progress/L01/prediction")
       .send({ text: "Guess." });
 
     const mentorAgent = request.agent(app);
     await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
 
     const flagRes = await mentorAgent
-      .patch("/api/admin/predictions/intern@example.com/F1")
+      .patch("/api/admin/predictions/intern@example.com/L01")
       .send({ wrongFlag: true });
     expect(flagRes.status).toBe(204);
 
@@ -240,13 +241,13 @@ describe("PATCH /api/admin/predictions/:email/:conceptId", () => {
     const internAgent = request.agent(app);
     await registerAndLogin(internAgent, "intern@example.com", "Intern");
     await internAgent
-      .post("/api/progress/F1/prediction")
+      .post("/api/progress/L01/prediction")
       .send({ text: "Guess." });
 
     const mentorAgent = request.agent(app);
     await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
     await mentorAgent
-      .patch("/api/admin/predictions/intern@example.com/F1")
+      .patch("/api/admin/predictions/intern@example.com/L01")
       .send({ wrongFlag: true });
 
     const progress = await internAgent.get("/api/progress");
@@ -261,7 +262,7 @@ describe("PATCH /api/admin/predictions/:email/:conceptId", () => {
     await registerAndLogin(mentorAgent, "mentor@example.com", "Mentor");
 
     const res = await mentorAgent
-      .patch("/api/admin/predictions/intern@example.com/F1")
+      .patch("/api/admin/predictions/intern@example.com/L01")
       .send({ wrongFlag: true });
     expect(res.status).toBe(404);
   });
@@ -270,11 +271,11 @@ describe("PATCH /api/admin/predictions/:email/:conceptId", () => {
     const internAgent = request.agent(app);
     await registerAndLogin(internAgent, "intern@example.com", "Intern");
     await internAgent
-      .post("/api/progress/F1/prediction")
+      .post("/api/progress/L01/prediction")
       .send({ text: "Guess." });
 
     const res = await internAgent
-      .patch("/api/admin/predictions/intern@example.com/F1")
+      .patch("/api/admin/predictions/intern@example.com/L01")
       .send({ wrongFlag: true });
     expect(res.status).toBe(403);
   });

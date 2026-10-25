@@ -3,8 +3,10 @@ import { requireAuth } from "../auth/middleware.js";
 import { getConcepts } from "../content.js";
 import {
   createPrediction,
+  getExplanationsForUser,
   getPrediction,
   getPredictionsForUser,
+  saveExplanation,
   getProgressForUser,
   getProgressStep,
   setProgressStep,
@@ -27,7 +29,39 @@ progressRouter.get("/", (req, res) => {
     progress.map((p) => [p.concept_id, p.step]),
   );
 
-  res.json({ predictions: predictionByConcept, steps: stepByConcept });
+  const explanationByConcept = Object.fromEntries(
+    getExplanationsForUser(req.user.email).map((e) => [e.concept_id, e.text]),
+  );
+
+  res.json({
+    predictions: predictionByConcept,
+    steps: stepByConcept,
+    explanations: explanationByConcept,
+  });
+});
+
+// "Explain it back": the learner's own account of what Claude Code changed.
+// Editable until the lesson is done; stored as written, like predictions.
+progressRouter.post("/:conceptId/explanation", (req, res) => {
+  const { conceptId } = req.params;
+  const { text } = req.body;
+
+  if (!getConcepts().some((c) => c.id === conceptId)) {
+    return res.status(404).json({ error: "no such concept" });
+  }
+  if (typeof text !== "string" || text.trim().length < 20 || text.length > 10000) {
+    return res
+      .status(400)
+      .json({ error: "Write at least a few sentences, in your own words." });
+  }
+  const current = getProgressStep(req.user.email, conceptId);
+  if (current !== "prove" && current !== "done") {
+    return res
+      .status(400)
+      .json({ error: "Finish the by-hand and Claude Code tasks first." });
+  }
+  saveExplanation(req.user.email, conceptId, text);
+  res.status(204).end();
 });
 
 progressRouter.post("/:conceptId/prediction", (req, res) => {

@@ -14,6 +14,9 @@ export function getProgram() {
   );
 }
 
+// Flattens the current lesson schema into the fields older API consumers and
+// tests expect (proveTask, checklist). Foundation files F1–F8 contribute only
+// their original concept name; their old prose never leaks through.
 export function getConcepts() {
   const files = fs
     .readdirSync(conceptsDir)
@@ -24,10 +27,15 @@ export function getConcepts() {
   const program = getProgram();
   return program.lessons.map((lesson) => {
     const foundation = foundations.find((item) => item.id === lesson.id);
+    const byHand = lesson.byHand;
+    const withAI = lesson.withAI;
     return {
-      ...foundation,
       ...lesson,
       concept: foundation?.concept || lesson.concept || lesson.title,
+      proveTask: byHand?.task || lesson.proveTask || "",
+      checklist:
+        lesson.checklist ||
+        [...(byHand?.checklist || []), ...(withAI?.checklist || [])],
     };
   });
 }
