@@ -36,7 +36,7 @@ npm run build
 git diff --check
 ```
 
-The client builds into `client/dist`; Express serves it when `NODE_ENV=production`. Docker Compose uses its own persistent SQLite volume. Do not deploy or modify production resources without explicit approval. See the [handoff](docs/HANDOFF.md#verification-and-release-checklist) before any release.
+The client builds into `client/dist`; Express serves it when `NODE_ENV=production`. Docker Compose uses its own persistent SQLite volume. A `caddy` service fronts the app on 80/443; until a domain is configured it serves HTTPS with a self-signed certificate (`tls internal` in the `Caddyfile`), so visitors see a one-time untrusted-certificate warning. The `app` container stays bound to `127.0.0.1` only. Do not deploy or modify production resources without explicit approval. See the [handoff](docs/HANDOFF.md#verification-and-release-checklist) before any release.
 
 ## Repository map
 
