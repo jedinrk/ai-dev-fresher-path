@@ -68,13 +68,18 @@ export default function App() {
             <BuildIllustration />
           </div>
           <p className="auth-footer">
-            Weekly mentor review <span>·</span> Hands-on learning{" "}
-            <span>·</span> Where learning grows into building
+            Weekly mentor review <span>·</span> Hands-on learning <span>·</span>{" "}
+            Where learning grows into building
           </p>
         </section>
         <section className="auth-panel">
           <AuthForm
             onAuthenticated={(next) => {
+              if (
+                next.role === "mentor" &&
+                ["", "#today"].includes(window.location.hash)
+              )
+                window.location.hash = "mentor"
               setUser(next)
               setError("")
             }}

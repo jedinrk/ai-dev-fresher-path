@@ -18,7 +18,8 @@ The interface should feel like a welcoming professional workspace for a first-ti
 - My project: project brief, deliverables, evidence submission, revision feedback, and sign-off. A mentor previews learner pages but cannot submit to their own review queue.
 - Resources: search, topic/week filtering, primary-source links, and a small glossary.
 - Questions: contextual drafts and a persistent conversation log.
-- Mentor workspace: review queue, questions, cohort progress, and a separate area for account management and original foundation records.
+- Mentor workspace: cohort selection and actionable learner list; individual profiles for progress, saved responses, checkpoint evidence/feedback and complete question history. Original foundation records live in each learner’s archive.
+- People & access: separate mentor-only destination for registration invitations, roles, cohort membership, access revocation and login activity. See [mentor workflow](docs/mentor-workspace.md).
 - Mentor curriculum: a full read-only inspection view of the same program data. Weekly briefs and evidence expectations stay visible; lessons expand individually or together. No prediction gate, completion controls, or progress writes. Lesson permalinks open the selected lesson with its week context.
 
 ## Implementation notes
@@ -63,7 +64,7 @@ The CSS loads Google Fonts, with sans-serif fallbacks. Verify functionality and 
 
 Current layout breakpoints are 1180px, 950px and 700px, with an additional wide-screen adjustment at 1500px. Below 700px the sidebar becomes top navigation. Reuse these unless a new component demonstrably needs a local breakpoint. Use `minmax(0, 1fr)`, flexible actions and wrapping for long content; avoid fixing a parent width to a desktop screenshot.
 
-Mentor mobile navigation uses two rows of three items so the sixth destination stays visible. Its short “Mentor” label keeps the accessible name “Mentor workspace.” On desktop, mentors see a program summary instead of a misleading personal completion bar. Nonessential topbar decoration is hidden on narrow screens so the breadcrumb can breathe.
+Mentor navigation has Cohort overview, Curriculum, Resources and People & access. On mobile these use two rows of two items. Cohort overview keeps the accessible name “Mentor workspace.” On desktop, mentors see a program summary instead of a misleading personal completion bar. Nonessential topbar decoration is hidden on narrow screens so the breadcrumb can breathe.
 
 ### Interaction contracts
 

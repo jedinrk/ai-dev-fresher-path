@@ -3,7 +3,7 @@ import { api } from "./api"
 import { Icon, PageHeading } from "./ui"
 import { draftKey, readDraft, saveDraft, removeDraft } from "./drafts"
 
-export default function Questions({ context, userEmail, mentor }) {
+export default function Questions({ context, conceptId, userEmail, mentor }) {
   const key = userEmail
     ? draftKey(userEmail, `question-${context || "general"}`)
     : null
@@ -31,7 +31,7 @@ export default function Questions({ context, userEmail, mentor }) {
     setSuccess(false)
     setSubmitting(true)
     try {
-      await api.askQuestion(text)
+      await (conceptId ? api.askQuestion(text, conceptId) : api.askQuestion(text))
       setText("")
       removeDraft(key)
       setSaved(false)

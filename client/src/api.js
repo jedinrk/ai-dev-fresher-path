@@ -24,6 +24,17 @@ export const api = {
       method: "POST",
       body: JSON.stringify(data),
     }),
+  listCohorts: () => request("/api/admin/cohorts"),
+  createCohort: (name) =>
+    request("/api/admin/cohorts", {
+      method: "POST",
+      body: JSON.stringify({ name }),
+    }),
+  getLearner: (email) =>
+    request(`/api/journey/learners/${encodeURIComponent(email)}`),
+  listPeople: () => request("/api/admin/people"),
+  loginActivity: (email = "") =>
+    request(`/api/admin/login-activity?email=${encodeURIComponent(email)}`),
   listReviews: () => request("/api/journey/reviews"),
   reviewCheckpoint: (email, week, data) =>
     request(`/api/journey/reviews/${encodeURIComponent(email)}/${week}`, {
@@ -45,10 +56,10 @@ export const api = {
       method: "DELETE",
     }),
   listAllowlist: () => request("/api/admin/allowlist"),
-  addAllowlistEntry: (email, role) =>
+  addAllowlistEntry: (email, role, cohortId) =>
     request("/api/admin/allowlist", {
       method: "POST",
-      body: JSON.stringify({ email, role }),
+      body: JSON.stringify({ email, role, cohortId }),
     }),
   removeAllowlistEntry: (email) =>
     request(`/api/admin/allowlist/${encodeURIComponent(email)}`, {
@@ -83,10 +94,10 @@ export const api = {
       { method: "PATCH", body: JSON.stringify({ wrongFlag }) },
     ),
   getMyQuestions: () => request("/api/questions"),
-  askQuestion: (text) =>
+  askQuestion: (text, conceptId) =>
     request("/api/questions", {
       method: "POST",
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ text, conceptId }),
     }),
   listFlaggedQuestions: () => request("/api/admin/questions"),
   answerQuestion: (id, answer) =>

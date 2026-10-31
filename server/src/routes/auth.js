@@ -5,6 +5,8 @@ import { hashPassword, verifyPassword } from '../auth/password.js';
 import { clearSessionCookie, setSessionCookie } from '../auth/session.js';
 import { createUser, findUserByEmail } from '../auth/users.js';
 
+import { assignCohort, cohortFor, recordLogin } from '../mentorship.js';
+
 export const authRouter = Router();
 
 function publicUser(user) {
@@ -35,22 +37,27 @@ authRouter.post('/register', (req, res) => {
     role: roleForEmail(email),
   });
 
+  if (user.role === 'intern' && !cohortFor(user.email)) assignCohort(user.email, 1);
+  recordLogin(user.email, 'registered');
   setSessionCookie(res, user.email);
   res.status(201).json(publicUser(user));
 });
 
 authRouter.post('/login', (req, res) => {
   const { email, password } = req.body;
-  const user = email && findUserByEmail(email);
+  const user = typeof email === 'string' && findUserByEmail(email);
 
-  if (!user || !verifyPassword(password || '', user.password_hash)) {
+  if (!user || !verifyPassword(typeof password === 'string' ? password : '', user.password_hash)) {
+    if (user) recordLogin(user.email, 'failed');
     return res.status(401).json({ error: 'invalid email or password' });
   }
 
   if (!isAllowlisted(user.email)) {
+    recordLogin(user.email, 'denied');
     return res.status(403).json({ error: 'this email is not authorised' });
   }
 
+  recordLogin(user.email, 'success');
   setSessionCookie(res, user.email);
   res.json(publicUser(user));
 });

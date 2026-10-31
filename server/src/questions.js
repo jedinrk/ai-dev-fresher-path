@@ -1,9 +1,9 @@
 import { getDb } from './db.js';
 
-export function createQuestion(userEmail, text) {
+export function createQuestion(userEmail, text, conceptId = null) {
   getDb()
-    .prepare('INSERT INTO questions (user_email, question_text) VALUES (?, ?)')
-    .run(userEmail, text);
+    .prepare('INSERT INTO questions (user_email, question_text, concept_id) VALUES (?, ?, ?)')
+    .run(userEmail, text, conceptId);
 }
 
 export function getQuestionsForUser(userEmail) {

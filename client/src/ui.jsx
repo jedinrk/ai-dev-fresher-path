@@ -2,6 +2,12 @@ import syntreeLogo from "./assets/syntree-logo.png"
 
 export function Icon({ name = "arrow", size = 20, ...props }) {
   const paths = {
+    people: (
+      <>
+        <circle cx="9" cy="7" r="3" />
+        <path d="M3 21v-3a6 6 0 0 1 12 0v3m2-17a3 3 0 0 1 0 6m2 4a5 5 0 0 1 3 5v2" />
+      </>
+    ),
     today: (
       <>
         <rect x="3" y="3" width="7" height="7" rx="1.5" />
@@ -80,9 +86,9 @@ export function Icon({ name = "arrow", size = 20, ...props }) {
   )
 }
 
-export function Brand() {
+export function Brand({ href = "#today" }) {
   return (
-    <a className="brand" href="#today" aria-label="Syntree home">
+    <a className="brand" href={href} aria-label="Syntree home">
       <img className="brand-logo" src={syntreeLogo} alt="Syntree" />
     </a>
   )

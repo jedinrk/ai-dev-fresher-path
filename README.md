@@ -53,3 +53,7 @@ The client builds into `client/dist`; Express serves it when `NODE_ENV=productio
 | `server/src/auth/` | Allowlist, password hashing and signed-cookie authentication |
 
 Screenshots and the original supplied PDF were kept under gitignored `.context/` during development. They are not required to run or continue the project. The committed documents above are the durable handoff.
+
+## Mentor and account workflows
+
+See [Mentor workspace](docs/mentor-workspace.md) for learner profiles, cohort management, manually shared registration invitations, login activity, and data-history limits.

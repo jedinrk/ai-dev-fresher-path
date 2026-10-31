@@ -6,6 +6,7 @@ import ConceptView from "./ConceptView"
 import Project from "./Project"
 import Questions from "./Questions"
 import Mentor from "./Mentor"
+import People from "./People"
 import Curriculum from "./Curriculum"
 
 const navigation = [
@@ -17,18 +18,23 @@ const navigation = [
 ]
 
 export default function Studio({ user, onLogout, loggingOut }) {
-  const [route, setRoute] = useState(window.location.hash.slice(1) || "today")
+  const [route, setRoute] = useState(
+    window.location.hash.slice(1) ||
+      (user.role === "mentor" ? "mentor" : "today"),
+  )
   const [data, setData] = useState(null)
   const [error, setError] = useState("")
   const main = useRef(null)
   const previousRoute = useRef(route)
-  const [page, detail] = route.split("/")
+  const [page, detail] = route.split("?")[0].split("/")
   const pageLabel =
-    page === "curriculum" || (page === "lesson" && user.role === "mentor")
-      ? "Mentor curriculum"
-      : page === "lesson"
-        ? "Learning studio"
-        : navigation.find(([key]) => key === page)?.[1] || "Mentor workspace"
+    page === "people"
+      ? "People & access"
+      : page === "curriculum" || (page === "lesson" && user.role === "mentor")
+        ? "Mentor curriculum"
+        : page === "lesson"
+          ? "Learning studio"
+          : navigation.find(([key]) => key === page)?.[1] || "Mentor workspace"
   function load() {
     Promise.all([api.getProgram(), api.getProgress(), api.getJourney()])
       .then(([program, progress, journey]) => {
@@ -41,16 +47,20 @@ export default function Studio({ user, onLogout, loggingOut }) {
   }
   useEffect(load, [])
   useEffect(() => {
-    const change = () => setRoute(window.location.hash.slice(1) || "today")
+    const change = () =>
+      setRoute(
+        window.location.hash.slice(1) ||
+          (user.role === "mentor" ? "mentor" : "today"),
+      )
     window.addEventListener("hashchange", change)
     return () => window.removeEventListener("hashchange", change)
-  }, [])
+  }, [user.role])
   useEffect(() => {
-    if (previousRoute.current !== route) {
+    if (previousRoute.current.split("?")[0] !== route.split("?")[0]) {
       main.current?.focus()
       window.scrollTo({ top: 0, behavior: "instant" })
-      previousRoute.current = route
     }
+    previousRoute.current = route
   }, [route])
   useEffect(() => {
     document.title = `Syntree · ${pageLabel}`
@@ -97,6 +107,12 @@ export default function Studio({ user, onLogout, loggingOut }) {
   const lesson = data?.program.lessons.find((l) => l.id === detail)
   const lessonWeek = data?.program.weeks.find((w) => w.ids.includes(detail))
   const active = page === "lesson" || page === "curriculum" ? "roadmap" : page
+  const mentorNavigation = [
+    ["mentor", "Cohort overview"],
+    ["roadmap", "Curriculum"],
+    ["resources", "Resources"],
+    ["people", "People & access"],
+  ]
   const props = data ? { ...data, currentWeek, user } : {}
   return (
     <div className="app-layout">
@@ -111,7 +127,7 @@ export default function Studio({ user, onLogout, loggingOut }) {
         Skip to content
       </a>
       <aside className="sidebar">
-        <Brand />
+        <Brand href={user.role === "mentor" ? "#mentor" : "#today"} />
         <div className="program-label">
           THE SYNTREE PROGRAM <span>01</span>
         </div>
@@ -119,35 +135,26 @@ export default function Studio({ user, onLogout, loggingOut }) {
           aria-label="Main navigation"
           className={user.role === "mentor" ? "mentor-navigation" : undefined}
         >
-          {navigation.map(([key, label]) => (
-            <a
-              key={key}
-              href={`#${key === "roadmap" && user.role === "mentor" ? "curriculum" : key}`}
-              className={`nav-item ${active === key ? "active" : ""}`}
-              aria-current={active === key ? "page" : undefined}
-            >
-              <Icon name={key} />
-              <span>
-                {key === "roadmap" && user.role === "mentor"
-                  ? "Curriculum"
-                  : label}
-              </span>
-              {key === "roadmap" && data && (
-                <span className="nav-count">{data.program.weeks.length}</span>
-              )}
-            </a>
-          ))}
-          {user.role === "mentor" && (
-            <a
-              href="#mentor"
-              aria-label="Mentor workspace"
-              className={`nav-item mentor-nav ${page === "mentor" ? "active" : ""}`}
-              aria-current={page === "mentor" ? "page" : undefined}
-            >
-              <Icon name="mentor" />
-              <span className="nav-full-label">Mentor workspace</span>
-              <span className="nav-short-label">Mentor</span>
-            </a>
+          {(user.role === "mentor" ? mentorNavigation : navigation).map(
+            ([key, label]) => (
+              <a
+                key={key}
+                aria-label={key === "mentor" ? "Mentor workspace" : undefined}
+                href={`#${key === "roadmap" && user.role === "mentor" ? "curriculum" : key}`}
+                className={`nav-item ${active === key ? "active" : ""}`}
+                aria-current={active === key ? "page" : undefined}
+              >
+                <Icon name={key} />
+                <span>
+                  {key === "roadmap" && user.role === "mentor"
+                    ? "Curriculum"
+                    : label}
+                </span>
+                {key === "roadmap" && data && (
+                  <span className="nav-count">{data.program.weeks.length}</span>
+                )}
+              </a>
+            ),
           )}
         </nav>
         <div className="sidebar-bottom">
@@ -165,7 +172,9 @@ export default function Studio({ user, onLogout, loggingOut }) {
               <>
                 <div>
                   <span>Your journey</span>
-                  <span>{total ? Math.round((completed / total) * 100) : 0}%</span>
+                  <span>
+                    {total ? Math.round((completed / total) * 100) : 0}%
+                  </span>
                 </div>
                 <ProgressBar
                   value={completed}
@@ -269,6 +278,11 @@ export default function Studio({ user, onLogout, loggingOut }) {
               {page === "questions" && (
                 <Questions
                   key={detail || "all"}
+                  conceptId={
+                    data.program.lessons.some((l) => l.id === detail)
+                      ? detail
+                      : undefined
+                  }
                   context={
                     data.program.lessons.find((l) => l.id === detail)?.title
                   }
@@ -278,7 +292,37 @@ export default function Studio({ user, onLogout, loggingOut }) {
               )}
               {page === "mentor" &&
                 (user.role === "mentor" ? (
-                  <Mentor program={data.program} user={user} />
+                  <div className="mentor-workspace">
+                    <Mentor
+                      key={detail || "overview"}
+                      program={data.program}
+                      user={user}
+                      route={route}
+                    />
+                  </div>
+                ) : (
+                  <div className="empty-state">
+                    <h1>This space is for mentors.</h1>
+                    <a href="#today">Return to your learning studio</a>
+                  </div>
+                ))}
+              {page === "people" &&
+                (user.role === "mentor" ? (
+                  <div className="people-workspace">
+                    <People
+                      user={user}
+                      tab={
+                        [
+                          "people",
+                          "invitations",
+                          "cohorts",
+                          "activity",
+                        ].includes(detail)
+                          ? detail
+                          : "people"
+                      }
+                    />
+                  </div>
                 ) : (
                   <div className="empty-state">
                     <h1>This space is for mentors.</h1>
@@ -337,6 +381,7 @@ export default function Studio({ user, onLogout, loggingOut }) {
                 "project",
                 "questions",
                 "mentor",
+                "people",
                 "lesson",
                 "curriculum",
               ].includes(page) && (

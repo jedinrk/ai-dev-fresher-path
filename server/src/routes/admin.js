@@ -24,6 +24,9 @@ import {
 } from '../questions.js';
 import { WEEK_CONCEPTS, WEEKS } from '../weeks.js';
 
+import { getDb } from '../db.js';
+import { assignCohort, listCohorts } from '../mentorship.js';
+
 export const adminRouter = Router();
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -55,9 +58,9 @@ adminRouter.get('/allowlist', (req, res) => {
 });
 
 adminRouter.post('/allowlist', (req, res) => {
-  const { email, role } = req.body;
+  const { email, role, cohortId } = req.body;
 
-  if (!email || !EMAIL_RE.test(email.trim())) {
+  if (typeof email !== 'string' || !EMAIL_RE.test(email.trim()) || email.length > 254) {
     return res.status(400).json({ error: 'a valid email is required' });
   }
 
@@ -65,6 +68,9 @@ adminRouter.post('/allowlist', (req, res) => {
     return res.status(400).json({ error: "role must be 'mentor' or 'intern'" });
   }
 
+  if (cohortId != null && (!Number.isInteger(cohortId) || !listCohorts().some(c => c.id === cohortId))) {
+    return res.status(400).json({ error: 'Choose an existing cohort.' });
+  }
   const normalized = email.trim().toLowerCase();
   const existing = getAllowlistEntry(normalized);
 
@@ -72,8 +78,15 @@ adminRouter.post('/allowlist', (req, res) => {
     return res.status(400).json({ error: 'cannot demote the last mentor' });
   }
 
-  const entry = upsertAllowlistEntry(normalized, role);
-  syncUserRole(normalized, role);
+  const entry = getDb().transaction(() => {
+    const updated = upsertAllowlistEntry(normalized, role);
+    syncUserRole(normalized, role);
+    if (role === 'intern') {
+      const membership = getDb().prepare('SELECT cohort_id FROM cohort_members WHERE user_email = ?').get(normalized);
+      assignCohort(normalized, cohortId ?? membership?.cohort_id ?? 1);
+    }
+    return updated;
+  })();
   res.status(existing ? 200 : 201).json(entry);
 });
 
@@ -189,7 +202,7 @@ adminRouter.post('/questions/:id/answer', (req, res) => {
   const { id } = req.params;
   const { answer } = req.body;
 
-  if (!answer || !answer.trim()) {
+  if (typeof answer !== 'string' || !answer.trim() || answer.length > 10000) {
     return res.status(400).json({ error: 'answer text is required' });
   }
 
@@ -215,4 +228,37 @@ adminRouter.patch('/questions/:id/flag', (req, res) => {
 
   setQuestionFlag(id, flagged);
   res.status(204).end();
+});
+
+adminRouter.get('/cohorts', (req, res) => res.json(listCohorts()));
+
+adminRouter.post('/cohorts', (req, res) => {
+  const { name } = req.body;
+  if (typeof name !== 'string' || !name.trim() || name.trim().length > 100) {
+    return res.status(400).json({ error: 'Use a cohort name between 1 and 100 characters.' });
+  }
+  if (listCohorts().some(c => c.name.toLowerCase() === name.trim().toLowerCase())) {
+    return res.status(409).json({ error: 'A cohort with this name already exists.' });
+  }
+  const result = getDb().prepare('INSERT INTO cohorts (name) VALUES (?)').run(name.trim());
+  res.status(201).json({ id: Number(result.lastInsertRowid), name: name.trim() });
+});
+
+adminRouter.get('/people', (req, res) => {
+  res.json(getDb().prepare(`SELECT a.email, u.name, a.role, a.created_at AS invitedAt,
+    u.created_at AS registeredAt, c.id AS cohortId, c.name AS cohortName,
+    (SELECT MAX(created_at) FROM login_events WHERE user_email = a.email AND outcome IN ('success', 'registered')) AS lastLogin
+    FROM allowlist a LEFT JOIN users u ON a.email = u.email
+    LEFT JOIN cohort_members m ON m.user_email = a.email
+    LEFT JOIN cohorts c ON c.id = m.cohort_id
+    ORDER BY u.name, a.email`).all());
+});
+
+adminRouter.get('/login-activity', (req, res) => {
+  // Bound the audit list; never expose passwords, cookies, or session identifiers.
+  const email = typeof req.query.email === 'string' ? req.query.email.trim().toLowerCase() : null;
+  const rows = email
+    ? getDb().prepare('SELECT id, user_email AS email, outcome, created_at AS createdAt FROM login_events WHERE user_email = ? ORDER BY id DESC LIMIT 100').all(email)
+    : getDb().prepare('SELECT id, user_email AS email, outcome, created_at AS createdAt FROM login_events ORDER BY id DESC LIMIT 100').all();
+  res.json(rows);
 });

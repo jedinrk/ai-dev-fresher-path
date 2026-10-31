@@ -89,6 +89,40 @@ export function getDb() {
   `);
 
   seedAllowlistFromEnvIfEmpty(db);
+  // Additive, idempotent migration: existing learning and access records stay intact.
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS cohorts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL UNIQUE,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE TABLE IF NOT EXISTS cohort_members (
+      user_email TEXT PRIMARY KEY, cohort_id INTEGER NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS login_events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, user_email TEXT NOT NULL,
+      outcome TEXT NOT NULL CHECK (outcome IN ('registered', 'success', 'failed', 'denied')),
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE INDEX IF NOT EXISTS login_events_user ON login_events(user_email, id);
+    CREATE TABLE IF NOT EXISTS review_history (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, user_email TEXT NOT NULL, version TEXT NOT NULL,
+      week INTEGER NOT NULL, event TEXT NOT NULL, evidence_url TEXT NOT NULL,
+      summary TEXT NOT NULL, mentor_notes TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE INDEX IF NOT EXISTS review_history_user ON review_history(user_email, version, id);
+    INSERT OR IGNORE INTO cohorts (id, name) VALUES (1, 'Current cohort');
+    INSERT OR IGNORE INTO cohort_members (user_email, cohort_id)
+      SELECT email, 1 FROM allowlist WHERE role = 'intern';
+  `);
+  if (
+    !db
+      .prepare("PRAGMA table_info(questions)")
+      .all()
+      .some((c) => c.name === "concept_id")
+  ) {
+    db.exec("ALTER TABLE questions ADD COLUMN concept_id TEXT");
+  }
 
   return db;
 }
@@ -98,22 +132,24 @@ export function getDb() {
 // allowlist table is first created gets seeded in, so the first mentor can
 // sign in and manage the allowlist from the admin panel from then on.
 function seedAllowlistFromEnvIfEmpty(database) {
-  const { count } = database.prepare('SELECT COUNT(*) AS count FROM allowlist').get();
+  const { count } = database
+    .prepare("SELECT COUNT(*) AS count FROM allowlist")
+    .get();
   if (count > 0) return;
 
-  const emails = (process.env.ALLOWLIST_EMAILS || '')
-    .split(',')
+  const emails = (process.env.ALLOWLIST_EMAILS || "")
+    .split(",")
     .map((email) => email.trim().toLowerCase())
     .filter(Boolean);
   if (emails.length === 0) return;
 
-  const mentorEmail = (process.env.MENTOR_EMAIL || '').trim().toLowerCase();
+  const mentorEmail = (process.env.MENTOR_EMAIL || "").trim().toLowerCase();
   const insert = database.prepare(
-    'INSERT OR IGNORE INTO allowlist (email, role) VALUES (?, ?)',
+    "INSERT OR IGNORE INTO allowlist (email, role) VALUES (?, ?)",
   );
   const insertAll = database.transaction((list) => {
     for (const email of list) {
-      insert.run(email, email === mentorEmail ? 'mentor' : 'intern');
+      insert.run(email, email === mentorEmail ? "mentor" : "intern");
     }
   });
   insertAll(emails);
